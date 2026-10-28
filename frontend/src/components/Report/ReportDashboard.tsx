@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ReportResponse, ReportItem } from '../../types/form.types';
 import { SummaryBanner } from './SummaryBanner';
 import { IssueCard } from './IssueCard';
+import { CriteriaLegend } from '../CriteriaLegend';
 import { downloadReportHtml } from '../../utils/exportReport';
 
 interface Props {
@@ -72,6 +73,8 @@ export function ReportDashboard({ report, onReset, onBack }: Props) {
         passCount={report.passCount}
         failCount={report.failCount}
       />
+
+      <CriteriaLegend />
 
       {issues.length === 0 ? (
         <div className="rounded-md bg-white p-6 text-center text-gray-700 shadow-sm ring-1 ring-gray-200">

@@ -174,7 +174,8 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
               tr: `Sayfa erişilebilir, ancak içeriğin yapay zeka ile doğrulanması çalıştırılamadı. ${analysis.evidence}`,
               en: `The page is accessible, but AI verification of its content could not run. ${analysis.evidence}`,
             }),
-            check.ref
+            check.ref,
+            language
           ),
           suggestion: pick(language, {
             tr: `Sayfa içeriğini elle doğrulayın. ${check.suggestion.tr}`,
@@ -189,7 +190,8 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
         status: 'fail',
         message: withRef(
           `${pick(language, check.fail).replace(/\s*\([^)]*\)$/, '')} ${analysis.evidence}`.trim(),
-          check.ref
+          check.ref,
+          language
         ),
         suggestion: pick(language, check.suggestion),
         url,

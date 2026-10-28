@@ -6,6 +6,7 @@ import { submitAssessmentStream } from './api/client';
 import { useMultiStepForm } from './hooks/useMultiStepForm';
 import { loadDraft, saveDraft, clearDraft } from './utils/draft';
 import { Stepper } from './components/Stepper';
+import { CriteriaLegend } from './components/CriteriaLegend';
 import { LanguageSelector } from './components/LanguageSelector';
 import { AssessmentProgress, type SectionStatus } from './components/AssessmentProgress';
 import { StepIdentity } from './components/steps/StepIdentity';
@@ -259,6 +260,7 @@ function App() {
                 className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
                 dangerouslySetInnerHTML={{ __html: t('app.disclaimer') }}
               />
+              <CriteriaLegend className="mt-2" />
             </div>
             <LanguageSelector />
           </div>

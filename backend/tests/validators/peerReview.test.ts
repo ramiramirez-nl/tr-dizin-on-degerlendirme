@@ -87,7 +87,7 @@ describe('validatePeerReview', () => {
   it('uses Turkish for tr and English for en', async () => {
     const bad = { ...good, reportsKeptFiveYears: false };
     expect(byField(await run(bad, 'tr'), 'reportsKeptFiveYears').message).toContain('beş yıl');
-    expect(byField(await run(bad, 'tr'), 'reportsKeptFiveYears').message).toContain('(GH 4)');
+    expect(byField(await run(bad, 'tr'), 'reportsKeptFiveYears').message).toContain('(Genel Husus 4)');
     expect(byField(await run(bad, 'en'), 'reportsKeptFiveYears').message).toContain('five years');
   });
 });

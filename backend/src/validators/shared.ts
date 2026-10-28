@@ -17,13 +17,45 @@ export interface Bilingual {
   en: string;
 }
 
-export function pick(language: string | undefined, text: Bilingual): string {
-  return language === 'en' ? text.en : text.tr;
+const REF_NUM = '\\d+(?:\\.\\d+)?';
+const REF_TOKEN = new RegExp(
+  `(?:ÖK|GH|K|T) ${REF_NUM}(?:\\s*[–-]\\s*${REF_NUM})?|Sözleşme \\d+(?:\\s*[/,]\\s*\\d+)*`,
+  'g'
+);
+const REF_NAMES: Record<string, Bilingual> = {
+  ÖK: { tr: 'Ön Koşul', en: 'Prerequisite' },
+  K: { tr: 'Kriter', en: 'Criterion' },
+  GH: { tr: 'Genel Husus', en: 'General Point' },
+  T: { tr: 'Tavsiye', en: 'Recommendation' },
+  Sözleşme: { tr: 'Başvuru Sözleşmesi', en: 'Application Agreement' },
+};
+
+/**
+ * Spell out criterion shorthand for readers. Every parenthesised group made
+ * only of codes (`ÖK n`, `K n`, `K 8.2`, `GH n`, `T n`, `Sözleşme 13/14`,
+ * ranges and comma lists) is rewritten, e.g. `(ÖK 10–14, GH 8)` becomes
+ * `(Ön Koşul 10–14, Genel Husus 8)`. Other parentheses and URLs are untouched.
+ */
+export function expandRefs(text: string, language?: string): string {
+  const lang = language === 'en' ? 'en' : 'tr';
+  return text.replace(/\(([^()]*)\)/g, (whole, inner: string) => {
+    const rest = inner.replace(REF_TOKEN, '');
+    if (rest === inner || /[^\s,;]/.test(rest)) return whole;
+    const expanded = inner.replace(REF_TOKEN, (token) => {
+      const code = token.startsWith('Sözleşme') ? 'Sözleşme' : token.slice(0, token.indexOf(' '));
+      return `${REF_NAMES[code][lang]}${token.slice(code.length)}`;
+    });
+    return `(${expanded})`;
+  });
 }
 
-/** Append a criterion reference such as `(K 15)` to a report message. */
-export function withRef(message: string, ref?: string): string {
-  return ref ? `${message} (${ref})` : message;
+export function pick(language: string | undefined, text: Bilingual): string {
+  return expandRefs(language === 'en' ? text.en : text.tr, language);
+}
+
+/** Append a criterion reference such as `(K 15)` to a report message, spelled out for the reader. */
+export function withRef(message: string, ref?: string, language?: string): string {
+  return ref ? `${message} ${expandRefs(`(${ref})`, language)}` : message;
 }
 
 export interface AccessFailure {
@@ -45,7 +77,8 @@ export function describeAccessFailure(
             tr: `${url} adresi 15 saniye içinde yanıt vermedi (zaman aşımı). Sayfa yavaş veya geçici olarak erişilemez olabilir; bu, sayfanın eksik olduğunu kanıtlamaz.`,
             en: `The URL ${url} did not respond within 15 seconds (timeout). It may be slow or temporarily down; this is not proof the page is missing.`,
           }),
-          ref
+          ref,
+          language
         ),
         suggestion: pick(language, {
           tr: 'Sayfanın normal bir tarayıcıda hızlı yüklendiğini doğrulayın ve değerlendirmeyi yeniden çalıştırın. Yavaş yüklenen sayfalar TR Dizin uzman incelemesinde de sorun yaratabilir.',
@@ -59,7 +92,8 @@ export function describeAccessFailure(
             tr: `${url} adresi HTTP ${scraped.statusCode} döndürdü.`,
             en: `The URL ${url} returned HTTP ${scraped.statusCode}.`,
           }),
-          ref
+          ref,
+          language
         ),
         suggestion: pick(language, {
           tr: 'Kırık bağlantıyı düzeltin: sayfa giriş yapmadan herkese açık olmalı ve HTTP 200 döndürmelidir.',
@@ -73,7 +107,8 @@ export function describeAccessFailure(
             tr: `${url} adresine ulaşılamadı (ağ hatası veya geçersiz adres).`,
             en: `The URL ${url} could not be reached (network error or invalid address).`,
           }),
-          ref
+          ref,
+          language
         ),
         suggestion: pick(language, {
           tr: 'URL’de yazım hatası olup olmadığını kontrol edin; sitenin çevrimiçi ve giriş gerektirmeden erişilebilir olduğundan emin olun.',
@@ -116,7 +151,8 @@ export async function checkUrl(
           tr: 'Bu kontrol için URL verilmedi.',
           en: 'No URL was provided for this check.',
         }),
-        options.ref
+        options.ref,
+        language
       ),
       suggestion: pick(language, failSuggestion),
     };
@@ -154,7 +190,7 @@ export async function checkUrl(
           tr: `Gerekli içerik bulunamadı. ${analysis.evidence}`,
           en: `Required content not found. ${analysis.evidence}`,
         });
-  const message = withRef(rawMessage, options.ref);
+  const message = withRef(rawMessage, options.ref, language);
   const suggestion = analysis.found
     ? ''
     : analysis.skipped

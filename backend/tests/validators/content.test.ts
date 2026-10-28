@@ -123,7 +123,7 @@ describe('validateContent', () => {
   it('uses Turkish for tr and English for en', async () => {
     const bad = { ...good, publishesOnTime: false };
     expect(byField(await run(bad, 'tr'), 'publishesOnTime').message).toContain('zamanında');
-    expect(byField(await run(bad, 'tr'), 'publishesOnTime').message).toContain('(K 1)');
+    expect(byField(await run(bad, 'tr'), 'publishesOnTime').message).toContain('(Kriter 1)');
     expect(byField(await run(bad, 'en'), 'publishesOnTime').message).toContain('on schedule');
   });
 });

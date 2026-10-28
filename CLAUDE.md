@@ -22,6 +22,8 @@ The project is independent. It is not affiliated with, endorsed by, or operated 
 
 Report messages cite these numbers, for example "(ÖK 2)", "(K 15)", "(GH 4)" or "(T 3)".
 
+Validators and backend tests use these short codes. At runtime `expandRefs()` in `backend/src/validators/shared.ts` (called by `pick()` and `withRef()`) spells them out for readers, for example "(ÖK 2)" becomes "(Ön Koşul 2)" or "(Prerequisite 2)", "(K 15)" becomes "(Kriter 15)" or "(Criterion 15)", and "(Sözleşme 13/14)" becomes "(Başvuru Sözleşmesi 13/14)". Tests therefore assert the spelled-out form. The locale files `tr.json` and `en.json` carry the spelled-out form directly (no short codes). A one-line legend (`legend.*` keys, `CriteriaLegend` component) explains the numbers and links to https://trdizin.gov.tr/kriterler/.
+
 ## Tech Stack
 
 ### Frontend

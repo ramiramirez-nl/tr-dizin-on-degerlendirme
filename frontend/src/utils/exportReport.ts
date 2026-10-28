@@ -1,5 +1,8 @@
 import type { ReportResponse, ReportItem } from '../types/form.types';
 
+/** Official TR Dizin criteria page that the legend links to. */
+export const CRITERIA_URL = 'https://trdizin.gov.tr/kriterler/';
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -58,12 +61,14 @@ export function buildReportHtml(
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #111827; }
   h1 { font-size: 22px; margin-bottom: 4px; }
+  .legend { color: #4b5563; font-size: 12px; margin: 0 0 8px; }
   .meta { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
   .disclaimer { border: 1px solid #bfdbfe; background: #eff6ff; color: #1e40af; font-size: 12px; padding: 10px 12px; border-radius: 6px; margin-top: 24px; }
 </style>
 </head>
 <body>
   <h1>${escapeHtml(t('app.title'))}</h1>
+  <p class="legend">${escapeHtml(t('legend.text'))} <a href="${CRITERIA_URL}">${CRITERIA_URL}</a></p>
   <div class="meta">${escapeHtml(generated)} — ${escapeHtml(report.overallStatus.toUpperCase())} · ${report.passCount} / ${report.failCount} / ${report.warningCount}</div>
   ${all.map((item) => renderItem(item, suggestionLabel, evidenceLabel)).join('\n')}
   <div class="disclaimer">${escapeHtml(t('report.trdizinDisclaimer'))}</div>

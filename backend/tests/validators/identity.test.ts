@@ -136,6 +136,6 @@ describe('validateIdentity', () => {
     expect(byField(await run(bad, 'tr'), 'publicationLanguages').message).toContain('belirtilmedi');
     expect(byField(await run(bad), 'publicationLanguages').message).toContain('belirtilmedi');
     expect(byField(await run(bad, 'en'), 'publicationLanguages').message).toContain('No publication language');
-    expect(byField(await run(bad, 'tr'), 'publicationLanguages').message).toContain('(ÖK 8)');
+    expect(byField(await run(bad, 'tr'), 'publicationLanguages').message).toContain('(Ön Koşul 8)');
   });
 });

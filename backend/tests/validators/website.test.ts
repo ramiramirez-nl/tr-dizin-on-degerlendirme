@@ -92,7 +92,7 @@ describe('validateWebsite', () => {
   it('uses Turkish for tr and English for en', async () => {
     const bad = { ...good, indexingClaimsAccurate: false };
     expect(byField(await run(bad, 'tr'), 'indexingClaimsAccurate').message).toContain('beyan edilmedi');
-    expect(byField(await run(bad, 'tr'), 'indexingClaimsAccurate').message).toContain('(GH 13)');
+    expect(byField(await run(bad, 'tr'), 'indexingClaimsAccurate').message).toContain('(Genel Husus 13)');
     expect(byField(await run(bad, 'en'), 'indexingClaimsAccurate').message).toContain('was not declared');
   });
 });
