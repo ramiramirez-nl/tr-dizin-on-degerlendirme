@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: tr-dizin-on-degerlendirme
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_BASE_URL
+        value: https://api.deepseek.com/v1
+      - key: AI_MODEL
+        value: deepseek-flash
+    healthCheckPath: /health

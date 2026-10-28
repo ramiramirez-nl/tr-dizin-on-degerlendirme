@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+*.log
+.npm-cache/
+*.tsbuildinfo
+.claude/
+docs/superpowers/
+.vscode/
+__pycache__/
+temp/
+.playwright-mcp/
+
+# Research source artifacts (kept locally, not versioned)
+*.jpg
+*.docx
+*.xlsx
+notes.md
+task_plan.md
+rules.txt

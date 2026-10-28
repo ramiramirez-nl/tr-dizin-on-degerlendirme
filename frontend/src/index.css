@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  a[href]::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.75em;
+    color: #4b5563;
+  }
+  article,
+  .rounded-lg,
+  .rounded-md {
+    break-inside: avoid;
+  }
+}
