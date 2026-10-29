@@ -162,7 +162,7 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
           suggestion: '',
           url,
           confidence: analysis.confidence,
-          evidence: analysis.evidence,
+          evidence: analysis.evidence || undefined,
         };
       }
       if (analysis.skipped) {
@@ -193,7 +193,7 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
         suggestion: pick(language, check.suggestion),
         url,
         confidence: analysis.confidence,
-        evidence: analysis.evidence,
+        evidence: analysis.evidence || undefined,
       };
     })
   );

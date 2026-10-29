@@ -3,7 +3,7 @@ import axios from 'axios';
 
 vi.mock('axios');
 
-import { analyzePageContent } from '../../src/ai/aiClient';
+import { analyzePageContent, verbatimQuote } from '../../src/ai/aiClient';
 
 const aiResponse = (content: string) => ({
   data: { choices: [{ message: { content } }] },
@@ -48,6 +48,31 @@ describe('analyzePageContent', () => {
     });
     expect(result.found).toBe(true);
     expect(result.confidence).toBe('high');
+  });
+
+  it('keeps evidence that is a verbatim quote from the page', async () => {
+    vi.mocked(axios.post).mockResolvedValue(
+      aiResponse(JSON.stringify({ found: true, confidence: 'high', evidence: 'Yayın Dili: Türkçe', issues: [] }))
+    );
+    const result = await analyzePageContent({
+      pageText: 'Dergi Bilgileri yayın dili:  türkçe, İngilizce ISSN 1234',
+      criteria: 'verbatim-keep',
+      url: 'https://example.com',
+    });
+    expect(result.evidence).toBe('Yayın Dili: Türkçe');
+  });
+
+  it('clears evidence that is a paraphrase or not on the page', async () => {
+    vi.mocked(axios.post).mockResolvedValue(
+      aiResponse(JSON.stringify({ found: false, confidence: 'high', evidence: 'Sayfada yayın dili belirtilmemiştir.', issues: [] }))
+    );
+    const result = await analyzePageContent({
+      pageText: 'Dergi Bilgileri ISSN 1234',
+      criteria: 'verbatim-clear',
+      url: 'https://example.com',
+    });
+    expect(result.found).toBe(false);
+    expect(result.evidence).toBe('');
   });
 
   it('returns structured JSON response', async () => {
@@ -96,5 +121,26 @@ describe('analyzePageContent', () => {
     });
     expect(result.found).toBe(false);
     expect(result.skipped).toBe(true);
+  });
+});
+
+describe('verbatimQuote', () => {
+  const page = 'Amaç ve Kapsam: Dergi, Edebiyat ve Tarih alanlarında çalışmalar yayımlar. İletişim: info@example.com';
+
+  it('accepts a quote regardless of case and whitespace', () => {
+    expect(verbatimQuote('"edebiyat   ve tarih alanlarında"', page)).toBe('"edebiyat   ve tarih alanlarında"');
+  });
+
+  it('accepts ellipsis-joined fragments that all occur on the page', () => {
+    expect(verbatimQuote('Amaç ve Kapsam ... info@example.com', page)).not.toBe('');
+  });
+
+  it('rejects a quote with one fragment missing from the page', () => {
+    expect(verbatimQuote('Amaç ve Kapsam ... yayın dili Türkçe', page)).toBe('');
+  });
+
+  it('returns an empty string for empty input', () => {
+    expect(verbatimQuote('  ', page)).toBe('');
+    expect(verbatimQuote('...', page)).toBe('');
   });
 });

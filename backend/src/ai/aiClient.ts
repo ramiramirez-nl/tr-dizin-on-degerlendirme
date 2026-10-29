@@ -42,6 +42,25 @@ export interface AnalysisResult {
   skipped?: boolean;
 }
 
+const normalizeForQuote = (s: string): string => s.replace(/\s+/g, ' ').trim().toLocaleLowerCase('tr');
+
+/**
+ * Keep the model's evidence only when it is a real quotation from the page.
+ * Fragments joined by an ellipsis must each occur in the page text. A
+ * paraphrase, a description or an invented quote yields an empty string, so
+ * the report never shows evidence the page does not contain.
+ */
+export function verbatimQuote(evidence: string, pageText: string): string {
+  const stripped = evidence.trim().replace(/^["'“”‘’«»]+|["'“”‘’«»]+$/g, '');
+  const fragments = stripped
+    .split(/\.{3}|…/)
+    .map((f) => normalizeForQuote(f).replace(/^["'“”‘’«»\s]+|["'“”‘’«»\s]+$/g, ''))
+    .filter(Boolean);
+  if (fragments.length === 0) return '';
+  const haystack = normalizeForQuote(pageText);
+  return fragments.every((f) => haystack.includes(f)) ? evidence.trim() : '';
+}
+
 export function isAiConfigured(): boolean {
   return Boolean(process.env.OPENAI_API_KEY ?? process.env.GEMINI_API_KEY);
 }
@@ -87,7 +106,7 @@ export async function analyzePageContent(
 
   const langInstruction =
     input.language && input.language !== 'en'
-      ? `\nIMPORTANT: Write the "evidence" and "issues" fields in the language identified by ISO 639-1 code "${input.language}". Do NOT translate the JSON keys, only the values.`
+      ? `\nIMPORTANT: Write the "issues" field in the language identified by ISO 639-1 code "${input.language}". Do NOT translate the JSON keys, only the values. The "evidence" field is never translated: it holds a verbatim quote in the page's own language.`
       : '';
 
   const prompt = `You are a compliance checker for TR Dizin, the Turkish national academic journal index run by TÜBİTAK ULAKBİM. Journal pages are usually in Turkish, sometimes in English; evaluate the content in whichever language it is written.
@@ -105,7 +124,7 @@ Respond ONLY with valid JSON in this exact format, no markdown fences:
 {
   "found": true/false,
   "confidence": "high"/"medium"/"low",
-  "evidence": "Quote or description of what you found (or did not find)",
+  "evidence": "A short verbatim quote, copied character for character from the page content, that supports your verdict. Use an empty string when there is no such quote (for example when the requirement is missing). Never paraphrase and never describe.",
   "issues": ["List of specific problems if any, empty array if none"]
 }`;
 
@@ -162,8 +181,12 @@ Respond ONLY with valid JSON in this exact format, no markdown fences:
         skipped: true,
       };
     }
-    analysisCache.set(cacheKey, parsed);
-    return parsed;
+    const result: AnalysisResult = {
+      ...parsed,
+      evidence: verbatimQuote(parsed.evidence, input.pageText.slice(0, PAGE_TEXT_LIMIT)),
+    };
+    analysisCache.set(cacheKey, result);
+    return result;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     const keyHint = API_KEY

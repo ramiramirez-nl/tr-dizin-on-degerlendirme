@@ -208,7 +208,7 @@ export async function checkUrl(
     suggestion,
     url,
     confidence: analysis.skipped ? undefined : analysis.confidence,
-    evidence: analysis.skipped ? undefined : analysis.evidence,
+    evidence: analysis.skipped ? undefined : analysis.evidence || undefined,
   };
 }
 

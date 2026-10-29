@@ -67,6 +67,13 @@ describe('validateWebsite', () => {
     expect(byField(items, 'publicationPolicyUrl').status).toBe('fail');
   });
 
+  it('omits the evidence field when the AI returned no quotation', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: [] });
+    const item = byField(await run(good), 'publicationPolicyUrl');
+    expect(item.status).toBe('fail');
+    expect(item.evidence).toBeUndefined();
+  });
+
   it('keeps the AI evidence out of the fail message so it is shown only once', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'high', evidence: 'kanit-metni', issues: [] });
     const item = byField(await run(good), 'publicationPolicyUrl');

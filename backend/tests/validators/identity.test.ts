@@ -107,6 +107,13 @@ describe('validateIdentity', () => {
     expect(item.message).toContain('(Ön Koşul 8)');
   });
 
+  it('omits the evidence field when the AI returned no quotation', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: [] });
+    const item = byField(await run(base), 'publicationLanguageStated');
+    expect(item.status).toBe('fail');
+    expect(item.evidence).toBeUndefined();
+  });
+
   it('warns on all AI checks when AI is skipped', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'low', evidence: 'skipped', issues: [], skipped: true });
     const items = await run(base);

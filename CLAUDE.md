@@ -172,7 +172,8 @@ The frontend has no secrets. All API calls go through the backend.
 - **aiClient.ts** (`backend/src/ai/aiClient.ts`) sends an OpenAI-compatible chat completion request with the page text and the validation criterion
 - The AI prompt identifies the reviewer as a TR Dizin compliance checker. Pages are usually Turkish, and the model evaluates content in any language.
 - The response is parsed as JSON and checked against the expected shape (`found`, `confidence`, `evidence`, `issues`). A malformed response degrades to a skipped result, which is reported as a warning.
-- The `language` parameter (`tr` or `en`) makes evidence quotes come back in the UI language. JSON keys are never translated.
+- The `language` parameter (`tr` or `en`) makes the `issues` list come back in the UI language. JSON keys are never translated.
+- `evidence` is a verbatim quote from the page, in the page's own language. `verbatimQuote()` checks the quote against the page text and clears the field when it is a paraphrase or not on the page. Validators then omit `evidence`, so IssueCard shows no "Kanıt" line for it.
 - One retry on timeout, 429 or 5xx. Successful analyses are cached for 24 hours. Each check reuses the scraped page text.
 
 ### 5. ISSN Verification
