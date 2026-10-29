@@ -56,6 +56,24 @@ describe('scrapeUrl', () => {
     expect(result.statusCode).toBe(200);
   });
 
+  it('keeps navigation text and reports declared language metadata', async () => {
+    vi.mocked(axios.get).mockResolvedValue(
+      htmlResponse(
+        '<html lang="tr"><head><link rel="alternate" hreflang="en" href="/en">' +
+          '<meta name="citation_language" content="tr"></head>' +
+          '<body><nav>Yayın Dili: Türkçe, İngilizce</nav><footer>Yayıncı: Test Üniversitesi</footer>' +
+          '<script>var x = 1;</script></body></html>'
+      )
+    );
+    const result = await scrapeUrl('https://example.com/nav-lang');
+    expect(result.text).toContain('Yayın Dili: Türkçe, İngilizce');
+    expect(result.text).toContain('Yayıncı: Test Üniversitesi');
+    expect(result.text).not.toContain('var x');
+    expect(result.meta).toContain('html lang=tr');
+    expect(result.meta).toContain('hreflang=en');
+    expect(result.meta).toContain('citation_language=tr');
+  });
+
   it('returns accessible false on HTTP error status', async () => {
     vi.mocked(axios.get).mockResolvedValue(htmlResponse('Not Found', 404));
     const result = await scrapeUrl('https://example.com/missing');

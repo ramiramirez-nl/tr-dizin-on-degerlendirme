@@ -67,6 +67,14 @@ describe('validateWebsite', () => {
     expect(byField(items, 'publicationPolicyUrl').status).toBe('fail');
   });
 
+  it('keeps the AI evidence out of the fail message so it is shown only once', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: 'kanit-metni', issues: [] });
+    const item = byField(await run(good), 'publicationPolicyUrl');
+    expect(item.evidence).toBe('kanit-metni');
+    expect(item.message).not.toContain('kanit-metni');
+    expect(item.message).toContain('Gerekli içerik bulunamadı.');
+  });
+
   it('warns when AI verification is skipped', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'low', evidence: 'skipped', issues: [], skipped: true });
     const items = await run(good);

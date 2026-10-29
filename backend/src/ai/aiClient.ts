@@ -21,8 +21,13 @@ const BASE_URL = process.env.OPENAI_BASE_URL ?? 'https://api.freemodel.dev/v1';
 const MODEL = process.env.AI_MODEL ?? 'gpt-4o-mini';
 const API_KEY = process.env.OPENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '';
 
+/** Characters of page text sent to the model. */
+const PAGE_TEXT_LIMIT = 8000;
+
 export interface AnalysisInput {
   pageText: string;
+  /** Declared language metadata from the page head (html lang, hreflang, ...). */
+  pageMeta?: string;
   criteria: string;
   url: string;
   language?: string;
@@ -75,7 +80,7 @@ export async function analyzePageContent(
   }
 
   const cacheKey = createHash('sha256')
-    .update([MODEL, input.language ?? '', input.criteria, input.pageText.slice(0, 3000)].join('|'))
+    .update([MODEL, input.language ?? '', input.criteria, input.pageMeta ?? '', input.pageText.slice(0, PAGE_TEXT_LIMIT)].join('|'))
     .digest('hex');
   const cached = analysisCache.get(cacheKey);
   if (cached) return cached;
@@ -91,8 +96,10 @@ Analyze the following webpage content and check if it meets this criterion:
 CRITERION: ${input.criteria}
 URL: ${input.url}
 ${langInstruction}
-PAGE CONTENT (first 3000 chars):
-${input.pageText.slice(0, 3000)}
+${input.pageMeta ? `PAGE LANGUAGE METADATA (hints only; html lang and hreflang describe the website interface, not necessarily the journal's publication language): ${input.pageMeta}\n` : ''}PAGE CONTENT (first ${PAGE_TEXT_LIMIT} chars; navigation and menu text are included and the page may be cut off):
+${input.pageText.slice(0, PAGE_TEXT_LIMIT)}
+
+If you cannot find the requirement, say it was not found in the provided excerpt. Do not claim the whole page lacks it.
 
 Respond ONLY with valid JSON in this exact format, no markdown fences:
 {

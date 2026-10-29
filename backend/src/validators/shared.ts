@@ -171,6 +171,7 @@ export async function checkUrl(
   }
   const analysis = await analyzePageContent({
     pageText: scraped.text,
+    pageMeta: scraped.meta,
     criteria: aiCriteria,
     url,
     language,
@@ -187,8 +188,8 @@ export async function checkUrl(
           en: `The page is accessible, but AI verification of its content could not run. ${analysis.evidence}`,
         })
       : pick(language, {
-          tr: `Gerekli içerik bulunamadı. ${analysis.evidence}`,
-          en: `Required content not found. ${analysis.evidence}`,
+          tr: 'Gerekli içerik bulunamadı.',
+          en: 'Required content not found.',
         });
   const message = withRef(rawMessage, options.ref, language);
   const suggestion = analysis.found

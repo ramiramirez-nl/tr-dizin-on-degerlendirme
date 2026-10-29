@@ -78,7 +78,7 @@ const HOMEPAGE_CHECKS: HomepageCheck[] = [
     field: 'publicationLanguageStated',
     ref: 'ÖK 8',
     criteria:
-      'Does the page state the journal\'s publication language(s) (for example "Yayın dili: Türkçe, İngilizce" or "Publication language: English")? The page may be in Turkish or English.',
+      'Does the page state the journal\'s publication language(s), meaning the language(s) in which articles are published (for example "Yayın dili: Türkçe, İngilizce", "Yayın Dili", "Dil: Türkçe", "Languages: Turkish, English" or "Publication language: English")? A website interface language switcher (such as TR/EN buttons) or an html lang attribute alone does NOT count. The page may be in Turkish or English.',
     pass: {
       tr: 'Derginin yayın dili/dilleri ana sayfada belirtiliyor. (ÖK 8)',
       en: "The journal's publication language(s) are stated on the homepage. (ÖK 8)",
@@ -148,6 +148,7 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
     HOMEPAGE_CHECKS.map(async (check): Promise<ReportItem> => {
       const analysis = await analyzePageContent({
         pageText: scraped.text,
+        pageMeta: scraped.meta,
         criteria: check.criteria,
         url,
         language,
@@ -188,11 +189,7 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
         section: SECTION,
         field: check.field,
         status: 'fail',
-        message: withRef(
-          `${pick(language, check.fail).replace(/\s*\([^)]*\)$/, '')} ${analysis.evidence}`.trim(),
-          check.ref,
-          language
-        ),
+        message: pick(language, check.fail),
         suggestion: pick(language, check.suggestion),
         url,
         confidence: analysis.confidence,

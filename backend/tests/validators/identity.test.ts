@@ -99,6 +99,14 @@ describe('validateIdentity', () => {
     }
   });
 
+  it('keeps the AI evidence out of the fail message so it is shown only once', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: 'yok', issues: [] });
+    const item = byField(await run(base), 'publicationLanguageStated');
+    expect(item.evidence).toBe('yok');
+    expect(item.message).not.toContain('yok');
+    expect(item.message).toContain('(Ön Koşul 8)');
+  });
+
   it('warns on all AI checks when AI is skipped', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'low', evidence: 'skipped', issues: [], skipped: true });
     const items = await run(base);

@@ -12,6 +12,27 @@ export interface ScrapeResult {
   links: string[];
   statusCode: number;
   errorType?: ScrapeErrorType;
+  /** Declared language metadata (html lang, hreflang, citation_language, ...), when present. */
+  meta?: string;
+}
+
+/** Collect language hints that are invisible in the body text. */
+function extractLanguageMeta($: cheerio.CheerioAPI): string {
+  const parts: string[] = [];
+  const htmlLang = $('html').attr('lang');
+  if (htmlLang) parts.push(`html lang=${htmlLang}`);
+  const alternates = $('link[rel="alternate"][hreflang]')
+    .map((_i, el) => $(el).attr('hreflang'))
+    .get()
+    .filter(Boolean);
+  if (alternates.length > 0) parts.push(`hreflang=${[...new Set(alternates)].join(',')}`);
+  for (const name of ['citation_language', 'dc.language', 'DC.Language', 'language']) {
+    const content = $(`meta[name="${name}"]`).attr('content');
+    if (content) parts.push(`${name}=${content}`);
+  }
+  const locale = $('meta[property="og:locale"]').attr('content');
+  if (locale) parts.push(`og:locale=${locale}`);
+  return parts.join('; ');
 }
 
 export function validatePublicUrl(rawUrl: string): string {
@@ -129,7 +150,10 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
     }
 
     const $ = cheerio.load(html);
-    $('script, style, nav, footer, noscript, iframe').remove();
+    const meta = extractLanguageMeta($);
+    // Keep nav/footer/header: journal metadata (publication language, ISSN,
+    // publisher) often sits in menus and sidebars on DergiPark-style sites.
+    $('script, style, noscript, iframe').remove();
     const text = $('body').text().replace(/\s+/g, ' ').trim();
 
     const links: string[] = [];
@@ -138,7 +162,7 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
       if (href.startsWith('http')) links.push(href);
     });
 
-    const result: ScrapeResult = { accessible: true, text, links, statusCode };
+    const result: ScrapeResult = { accessible: true, text, links, statusCode, ...(meta ? { meta } : {}) };
     scrapeCache.set(safeUrl, result);
     return result;
   } catch (err) {
