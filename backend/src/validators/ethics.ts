@@ -167,12 +167,12 @@ export async function validateEthics(
       severity: 'warning',
       language,
       pass: {
-        tr: 'Baş editör, editör, editör yardımcıları ve yayıncıya ait makaleler dergide yayımlanmıyor. (K 8)',
-        en: 'Articles by the editor in chief, editors, assistant editors and the publisher are not published in the journal. (K 8)',
+        tr: 'Baş editör, editör, editör yardımcıları ve yayıncı dergide yayın yapmıyor. (K 8)',
+        en: 'The editor in chief, editors, assistant editors and the publisher do not publish in the journal. (K 8)',
       },
       fail: {
-        tr: 'Baş editör, editör, editör yardımcıları ve yayıncıya ait makalelerin dergide yayımlanmadığı beyan edilmedi. (K 8)',
-        en: 'It was not declared that articles by the editor in chief, editors, assistant editors and the publisher are not published in the journal. (K 8)',
+        tr: 'Baş editör, editör, editör yardımcıları ve yayıncının dergide yayın yapmadığı beyan edilmedi. (K 8)',
+        en: 'It was not declared that the editor in chief, editors, assistant editors and the publisher do not publish in the journal. (K 8)',
       },
       suggestion: {
         tr: 'Dergi yönetiminde görevli kişilerin makalelerini kendi dergilerinde yayımlamaktan kaçınmalarını sağlayın.',

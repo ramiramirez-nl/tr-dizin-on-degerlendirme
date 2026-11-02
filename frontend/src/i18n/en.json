@@ -204,7 +204,7 @@
   "step.ethics.requiresDeclarationsAtArticleEndHint": "(Criterion 13)",
   "step.ethics.respectsCopyrightForWorksUsed": "Copyright regulations are respected for ideas and works of art used.",
   "step.ethics.respectsCopyrightForWorksUsedHint": "(Criterion 8.6)",
-  "step.ethics.editorialTeamDoesNotPublish": "Articles by the editor in chief, editors, assistant editors and the publisher are not published in the journal.",
+  "step.ethics.editorialTeamDoesNotPublish": "The editor in chief, editors, assistant editors and the publisher do not publish in the journal.",
   "step.ethics.editorialTeamDoesNotPublishHint": "(Criterion 8)",
   "step.ethics.editorsOwnArticlesIndependentlyReviewed": "Articles by board members are handled by an editor outside the conflict and by independent reviewers. This policy is shared on the website.",
   "step.ethics.editorsOwnArticlesIndependentlyReviewedHint": "(Criterion 8)",
