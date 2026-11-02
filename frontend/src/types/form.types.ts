@@ -55,7 +55,6 @@ export interface PeerReviewData {
   canUploadReviewReportsPdf: boolean; // K16
   screensPlagiarism: boolean; // T3
   plagiarismPolicyUrl: string; // T3
-  publishesReviewerList: boolean; // T1
 }
 
 export interface ArticleFormatData {

@@ -39,7 +39,6 @@ export function StepPeerReview() {
           {...register('peerReview.plagiarismPolicyUrl', urlRules)}
         />
       )}
-      <CheckboxField name="peerReview.publishesReviewerList" />
     </section>
   );
 }

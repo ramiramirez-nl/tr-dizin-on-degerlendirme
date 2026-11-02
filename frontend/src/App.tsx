@@ -81,7 +81,6 @@ const DEFAULT_VALUES: FormData = {
     canUploadReviewReportsPdf: false,
     screensPlagiarism: false,
     plagiarismPolicyUrl: '',
-    publishesReviewerList: false,
   },
   articleFormat: {
     sampleArticleUrl: '',

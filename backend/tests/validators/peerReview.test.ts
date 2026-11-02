@@ -31,7 +31,6 @@ const good: PeerReviewData = {
   canUploadReviewReportsPdf: true,
   screensPlagiarism: true,
   plagiarismPolicyUrl: 'https://example.com/plagiarism',
-  publishesReviewerList: true,
 };
 const run = (d: PeerReviewData, lang?: string) => validatePeerReview(d, lang) as Promise<Item[]>;
 
@@ -52,7 +51,7 @@ describe('validatePeerReview', () => {
 
   it('passes everything on the happy path', async () => {
     const items = await run(good, 'tr');
-    expect(items).toHaveLength(11);
+    expect(items).toHaveLength(10);
     expect(items.every((i) => i.status === 'pass' && i.section === 'Peer Review')).toBe(true);
   });
 
@@ -65,7 +64,7 @@ describe('validatePeerReview', () => {
     expect(byField(await run({ ...good, [field]: false }), field).status).toBe('fail');
   });
 
-  it.each(['thirdReviewerOnDisagreement', 'canUploadReviewReportsPdf', 'screensPlagiarism', 'publishesReviewerList'] as const)(
+  it.each(['thirdReviewerOnDisagreement', 'canUploadReviewReportsPdf', 'screensPlagiarism'] as const)(
     'warns when %s is not declared',
     async (field) => {
       const items = await run({ ...good, [field]: undefined as unknown as boolean });

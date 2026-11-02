@@ -167,16 +167,16 @@ export async function validateEthics(
       severity: 'warning',
       language,
       pass: {
-        tr: 'Editör, baş editör ve yayıncıya ait makaleler bağımsız hakemlik sürecinden geçiyor. (K 8)',
-        en: 'Articles by the editor, editor in chief and publisher go through an independent review process. (K 8)',
+        tr: 'Baş editör dergide yayın yapmıyor. Kurul üyelerine ait makaleler süreci yönetmeyen bir editör ve bağımsız hakemler aracılığıyla değerlendiriliyor. Bu politika web sitesinde paylaşılıyor. (K 8)',
+        en: 'The editor in chief does not publish in the journal. Articles by board members are handled by an editor outside the conflict and by independent reviewers. This policy is shared on the website. (K 8)',
       },
       fail: {
-        tr: 'Editör, baş editör ve yayıncıya ait makalelerin bağımsız biçimde değerlendirildiği beyan edilmedi. (K 8)',
-        en: 'It was not declared that articles by the editor, editor in chief and publisher are reviewed independently. (K 8)',
+        tr: 'Baş editörün dergide yayın yapmadığı, kurul üyelerine ait makalelerin bağımsız değerlendirildiği ve bu politikanın web sitesinde paylaşıldığı beyan edilmedi. (K 8)',
+        en: 'It was not declared that the editor in chief does not publish in the journal, that board members\' articles are reviewed independently, and that this policy is shared on the website. (K 8)',
       },
       suggestion: {
-        tr: 'Editörlerin ve yayıncının kendi makalelerini, süreci yönetmeyen bir editör ve bağımsız hakemler aracılığıyla değerlendirin.',
-        en: 'Have articles by editors and the publisher handled by an editor outside the conflict and by independent reviewers.',
+        tr: 'Baş editörün dergide yayın yapmamasını sağlayın, kurul üyelerinin makalelerini süreci yönetmeyen bir editör ve bağımsız hakemlerle değerlendirin ve bu politikayı web sitesinde yayımlayın.',
+        en: 'Ensure the editor in chief does not publish in the journal, handle board members\' articles through an editor outside the conflict and independent reviewers, and publish this policy on the website.',
       },
     }),
   ];

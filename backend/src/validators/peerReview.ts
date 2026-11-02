@@ -195,26 +195,5 @@ export async function validatePeerReview(
     );
   }
 
-  results.push(
-    declaration({
-      section: SECTION,
-      field: 'publishesReviewerList',
-      ok: data.publishesReviewerList,
-      severity: 'warning',
-      language,
-      pass: {
-        tr: 'Hakem listesi yayımlanıyor. (T 1)',
-        en: 'A list of reviewers is published. (T 1)',
-      },
-      fail: {
-        tr: 'Hakem listesinin yayımlandığı beyan edilmedi. (T 1)',
-        en: 'It was not declared that a reviewer list is published. (T 1)',
-      },
-      suggestion: {
-        tr: 'Dergiye katkı veren hakemlerin listesini (adlarıyla) düzenli aralıklarla yayımlayın.',
-        en: 'Publish a list of the reviewers who contributed to the journal at regular intervals.',
-      },
-    })
-  );
   return results;
 }

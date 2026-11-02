@@ -60,7 +60,6 @@ const peerReviewSchema = z.object({
   canUploadReviewReportsPdf: triStateBool,
   screensPlagiarism: triStateBool,
   plagiarismPolicyUrl: urlField,
-  publishesReviewerList: triStateBool,
 });
 
 const articleFormatSchema = z.object({
