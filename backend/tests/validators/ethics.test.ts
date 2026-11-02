@@ -29,6 +29,7 @@ const good: EthicsData = {
   requiresInformedConsentForCaseReports: true,
   requiresDeclarationsAtArticleEnd: true,
   respectsCopyrightForWorksUsed: true,
+  editorialTeamDoesNotPublish: true,
   editorsOwnArticlesIndependentlyReviewed: true,
 };
 const social: ValidationContext = { subjectArea: 'social_humanities', issuesPerYear: 2 };
@@ -38,7 +39,7 @@ const run = (d: EthicsData, lang?: string, ctx: ValidationContext = social) =>
 describe('validateEthics', () => {
   it('passes everything on the happy path', async () => {
     const items = await run(good, 'tr');
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(10);
     expect(items.every((i) => i.status === 'pass' && i.section === 'Ethics')).toBe(true);
   });
 
@@ -50,6 +51,11 @@ describe('validateEthics', () => {
     'requiresDeclarationsAtArticleEnd',
   ] as const)('fails when %s is false', async (field) => {
     expect(byField(await run({ ...good, [field]: false }), field).status).toBe('fail');
+  });
+
+  it('warns when publishing by the editorial team is not ruled out', async () => {
+    const items = await run({ ...good, editorialTeamDoesNotPublish: undefined as unknown as boolean });
+    expect(byField(items, 'editorialTeamDoesNotPublish').status).toBe('warning');
   });
 
   it('warns when independent review of editors\' own articles is not declared', async () => {

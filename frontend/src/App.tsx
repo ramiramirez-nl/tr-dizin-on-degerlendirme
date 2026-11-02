@@ -111,6 +111,7 @@ const DEFAULT_VALUES: FormData = {
     requiresInformedConsentForCaseReports: false,
     requiresDeclarationsAtArticleEnd: false,
     respectsCopyrightForWorksUsed: false,
+    editorialTeamDoesNotPublish: false,
     editorsOwnArticlesIndependentlyReviewed: false,
   },
   content: {

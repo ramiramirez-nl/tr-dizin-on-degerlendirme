@@ -162,21 +162,40 @@ export async function validateEthics(
     }),
     declaration({
       section: SECTION,
+      field: 'editorialTeamDoesNotPublish',
+      ok: data.editorialTeamDoesNotPublish,
+      severity: 'warning',
+      language,
+      pass: {
+        tr: 'Baş editör, editör, editör yardımcıları ve yayıncıya ait makaleler dergide yayımlanmıyor. (K 8)',
+        en: 'Articles by the editor in chief, editors, assistant editors and the publisher are not published in the journal. (K 8)',
+      },
+      fail: {
+        tr: 'Baş editör, editör, editör yardımcıları ve yayıncıya ait makalelerin dergide yayımlanmadığı beyan edilmedi. (K 8)',
+        en: 'It was not declared that articles by the editor in chief, editors, assistant editors and the publisher are not published in the journal. (K 8)',
+      },
+      suggestion: {
+        tr: 'Dergi yönetiminde görevli kişilerin makalelerini kendi dergilerinde yayımlamaktan kaçınmalarını sağlayın.',
+        en: 'Ensure that people who run the journal avoid publishing their own articles in it.',
+      },
+    }),
+    declaration({
+      section: SECTION,
       field: 'editorsOwnArticlesIndependentlyReviewed',
       ok: data.editorsOwnArticlesIndependentlyReviewed,
       severity: 'warning',
       language,
       pass: {
-        tr: 'Baş editör dergide yayın yapmıyor. Kurul üyelerine ait makaleler süreci yönetmeyen bir editör ve bağımsız hakemler aracılığıyla değerlendiriliyor. Bu politika web sitesinde paylaşılıyor. (K 8)',
-        en: 'The editor in chief does not publish in the journal. Articles by board members are handled by an editor outside the conflict and by independent reviewers. This policy is shared on the website. (K 8)',
+        tr: 'Kurul üyelerine ait makaleler süreci yönetmeyen bir editör ve bağımsız hakemler aracılığıyla değerlendiriliyor. Bu politika web sitesinde paylaşılıyor. (K 8)',
+        en: 'Articles by board members are handled by an editor outside the conflict and by independent reviewers. This policy is shared on the website. (K 8)',
       },
       fail: {
-        tr: 'Baş editörün dergide yayın yapmadığı, kurul üyelerine ait makalelerin bağımsız değerlendirildiği ve bu politikanın web sitesinde paylaşıldığı beyan edilmedi. (K 8)',
-        en: 'It was not declared that the editor in chief does not publish in the journal, that board members\' articles are reviewed independently, and that this policy is shared on the website. (K 8)',
+        tr: 'Kurul üyelerine ait makalelerin bağımsız değerlendirildiği ve bu politikanın web sitesinde paylaşıldığı beyan edilmedi. (K 8)',
+        en: 'It was not declared that articles by board members are reviewed independently and that this policy is shared on the website. (K 8)',
       },
       suggestion: {
-        tr: 'Baş editörün dergide yayın yapmamasını sağlayın, kurul üyelerinin makalelerini süreci yönetmeyen bir editör ve bağımsız hakemlerle değerlendirin ve bu politikayı web sitesinde yayımlayın.',
-        en: 'Ensure the editor in chief does not publish in the journal, handle board members\' articles through an editor outside the conflict and independent reviewers, and publish this policy on the website.',
+        tr: 'Kurul üyelerinin makalelerini süreci yönetmeyen bir editör ve bağımsız hakemlerle değerlendirin ve bu politikayı web sitesinde yayımlayın.',
+        en: 'Handle board members\' articles through an editor outside the conflict and independent reviewers, and publish this policy on the website.',
       },
     }),
   ];

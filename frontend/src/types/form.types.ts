@@ -87,6 +87,7 @@ export interface EthicsData {
   requiresInformedConsentForCaseReports: boolean; // K8.2
   requiresDeclarationsAtArticleEnd: boolean; // K13
   respectsCopyrightForWorksUsed: boolean; // K8.6
+  editorialTeamDoesNotPublish: boolean; // K8
   editorsOwnArticlesIndependentlyReviewed: boolean; // K8
 }
 

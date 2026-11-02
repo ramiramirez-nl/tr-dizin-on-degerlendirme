@@ -92,6 +92,7 @@ const ethicsSchema = z.object({
   requiresInformedConsentForCaseReports: triStateBool,
   requiresDeclarationsAtArticleEnd: triStateBool,
   respectsCopyrightForWorksUsed: triStateBool,
+  editorialTeamDoesNotPublish: triStateBool,
   editorsOwnArticlesIndependentlyReviewed: triStateBool,
 });
 
