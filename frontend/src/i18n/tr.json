@@ -206,6 +206,8 @@
   "step.ethics.requiresDeclarationsAtArticleEndHint": "(Kriter 13)",
   "step.ethics.respectsCopyrightForWorksUsed": "Kullanılan fikir ve sanat eserleri için telif hakkı düzenlemelerine riayet ediliyor.",
   "step.ethics.respectsCopyrightForWorksUsedHint": "(Kriter 8.6)",
+  "step.ethics.editorsOwnArticlesIndependentlyReviewed": "Editör, baş editör ve yayıncıya ait makaleler, süreci yönetmeyen bir editör ve bağımsız hakemler aracılığıyla değerlendiriliyor.",
+  "step.ethics.editorsOwnArticlesIndependentlyReviewedHint": "(Kriter 8)",
   "step.content.title": "7. İçerik ve Düzenlilik",
   "step.content.publishesOnTime": "Sayılar ilan edilen aralıklarla, zamanında yayımlanıyor ve ODİS'e yükleniyor.",
   "step.content.publishesOnTimeHint": "Zamanında sayı yüklemeyen dergiler TR Dizin'e kabul edilmez (Kriter 1).",

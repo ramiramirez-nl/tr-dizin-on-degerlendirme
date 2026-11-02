@@ -159,6 +159,25 @@ export async function validatePeerReview(
     }),
   ];
 
+  // Detail is a quality judgement, so a miss is a warning, not a fail. Only
+  // run when the first check passed: otherwise the same page problem would
+  // be reported twice.
+  if (review.status === 'pass') {
+    const detail = await checkUrl(
+      data.peerReviewPolicyUrl,
+      SECTION,
+      'peerReviewProcessDetailed',
+      'Does this page describe the peer review process in detail: the steps from submission to decision, the expected timing or deadlines, how the editor decides, and how the reviewers\' opinions are used and returned to the authors? The page may be in Turkish or English.',
+      {
+        tr: 'Hakemlik sürecini adım adım (başvurudan karara kadar), süreleri ve hakem görüşlerinin nasıl kullanıldığını içerecek biçimde ayrıntılandırın. (K 15)',
+        en: 'Describe the peer review process step by step, from submission to decision, including timing and how reviewer opinions are used. (K 15)',
+      },
+      language,
+      { ref: 'K 15' }
+    );
+    results.push(detail.status === 'fail' ? { ...detail, status: 'warning' } : detail);
+  }
+
   if (data.screensPlagiarism === true && data.plagiarismPolicyUrl) {
     results.push(
       await checkUrl(

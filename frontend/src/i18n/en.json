@@ -206,6 +206,8 @@
   "step.ethics.requiresDeclarationsAtArticleEndHint": "(Criterion 13)",
   "step.ethics.respectsCopyrightForWorksUsed": "Copyright regulations are respected for ideas and works of art used.",
   "step.ethics.respectsCopyrightForWorksUsedHint": "(Criterion 8.6)",
+  "step.ethics.editorsOwnArticlesIndependentlyReviewed": "Articles by the editor, editor in chief and publisher are handled by an editor outside the conflict and by independent reviewers.",
+  "step.ethics.editorsOwnArticlesIndependentlyReviewedHint": "(Criterion 8)",
   "step.content.title": "7. Content & Regularity",
   "step.content.publishesOnTime": "Issues are published on schedule at the announced intervals and uploaded to ODİS.",
   "step.content.publishesOnTimeHint": "Journals that do not upload issues on time are not accepted into TR Dizin (Criterion 1).",

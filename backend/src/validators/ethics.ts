@@ -160,5 +160,24 @@ export async function validateEthics(
         en: 'State in your policy that copyright is respected and permissions are obtained for figures, tables and quotations used in articles.',
       },
     }),
+    declaration({
+      section: SECTION,
+      field: 'editorsOwnArticlesIndependentlyReviewed',
+      ok: data.editorsOwnArticlesIndependentlyReviewed,
+      severity: 'warning',
+      language,
+      pass: {
+        tr: 'Editör, baş editör ve yayıncıya ait makaleler bağımsız hakemlik sürecinden geçiyor. (K 8)',
+        en: 'Articles by the editor, editor in chief and publisher go through an independent review process. (K 8)',
+      },
+      fail: {
+        tr: 'Editör, baş editör ve yayıncıya ait makalelerin bağımsız biçimde değerlendirildiği beyan edilmedi. (K 8)',
+        en: 'It was not declared that articles by the editor, editor in chief and publisher are reviewed independently. (K 8)',
+      },
+      suggestion: {
+        tr: 'Editörlerin ve yayıncının kendi makalelerini, süreci yönetmeyen bir editör ve bağımsız hakemler aracılığıyla değerlendirin.',
+        en: 'Have articles by editors and the publisher handled by an editor outside the conflict and by independent reviewers.',
+      },
+    }),
   ];
 }

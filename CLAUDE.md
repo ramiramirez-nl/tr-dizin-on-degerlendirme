@@ -273,6 +273,7 @@ Keep files under 400 lines. Current structure:
 
 - Many criteria are self-declared and cannot be verified: publication timeliness and ODİS uploads (K 1), journal information completeness, reviewer and board data, and the copyable-PDF rule
 - Criteria GH 1, 3, 6, 7 and 12 are not checked directly
+- Quality judgements that a human reviewer scores (article content quality, foreign language quality, review report quality, reviewer expertise) are not checked
 - The ISSN Office record of the Ministry of Culture is not queried. ISSN checks use portal.issn.org only.
 - Review report PDFs (K 16) and the content of issue PDFs cannot be inspected
 - AI content analysis is best-effort and may miss statements or malformed pages

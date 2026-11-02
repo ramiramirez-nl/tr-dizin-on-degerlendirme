@@ -44,7 +44,7 @@ describe('validateIdentity', () => {
     const items = await run(base, 'tr');
     expect(items.every((i) => i.status === 'pass')).toBe(true);
     expect(items.every((i) => i.section === 'Identity')).toBe(true);
-    for (const f of ['homepageUrl', 'issnOnline', 'issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated', 'publicationLanguages', 'issuesPerYear', 'publishedIssueCount']) {
+    for (const f of ['homepageUrl', 'issnOnline', 'issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated', 'ethicsOnHomepage', 'publicationLanguages', 'issuesPerYear', 'publishedIssueCount']) {
       expect(byField(items, f)?.status).toBe('pass');
     }
   });
@@ -53,7 +53,7 @@ describe('validateIdentity', () => {
     scrape.mockResolvedValue({ accessible: false, text: '', links: [], statusCode: 404, errorType: 'http' });
     const items = await run(base);
     expect(byField(items, 'homepageUrl').status).toBe('fail');
-    for (const f of ['issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated']) {
+    for (const f of ['issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated', 'ethicsOnHomepage']) {
       expect(byField(items, f).status).toBe('warning');
     }
     expect(ai).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe('validateIdentity', () => {
   it('fails the three homepage AI checks when the criteria are not found', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'high', evidence: 'yok', issues: [] });
     const items = await run(base);
-    for (const f of ['issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated']) {
+    for (const f of ['issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated', 'ethicsOnHomepage']) {
       expect(byField(items, f).status).toBe('fail');
     }
   });
@@ -117,7 +117,7 @@ describe('validateIdentity', () => {
   it('warns on all AI checks when AI is skipped', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'low', evidence: 'skipped', issues: [], skipped: true });
     const items = await run(base);
-    for (const f of ['issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated']) {
+    for (const f of ['issnOnHomepage', 'peerReviewedStatement', 'publicationLanguageStated', 'ethicsOnHomepage']) {
       expect(byField(items, f).status).toBe('warning');
     }
   });

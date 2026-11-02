@@ -36,9 +36,23 @@ const good: PeerReviewData = {
 const run = (d: PeerReviewData, lang?: string) => validatePeerReview(d, lang) as Promise<Item[]>;
 
 describe('validatePeerReview', () => {
+  it('downgrades a missing process detail to a warning', async () => {
+    ai.mockResolvedValueOnce({ found: true, confidence: 'high', evidence: 'ok', issues: [] });
+    ai.mockResolvedValueOnce({ found: false, confidence: 'high', evidence: '', issues: [] });
+    const item = byField(await run(good), 'peerReviewProcessDetailed');
+    expect(item.status).toBe('warning');
+  });
+
+  it('skips the detail check when the review page check did not pass', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: [] });
+    const items = await run(good);
+    expect(byField(items, 'peerReviewPolicyUrl').status).toBe('fail');
+    expect(byField(items, 'peerReviewProcessDetailed')).toBeUndefined();
+  });
+
   it('passes everything on the happy path', async () => {
     const items = await run(good, 'tr');
-    expect(items).toHaveLength(10);
+    expect(items).toHaveLength(11);
     expect(items.every((i) => i.status === 'pass' && i.section === 'Peer Review')).toBe(true);
   });
 

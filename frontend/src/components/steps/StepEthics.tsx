@@ -29,6 +29,7 @@ export function StepEthics() {
       <CheckboxField name="ethics.requiresInformedConsentForCaseReports" />
       <CheckboxField name="ethics.requiresDeclarationsAtArticleEnd" />
       <CheckboxField name="ethics.respectsCopyrightForWorksUsed" />
+      <CheckboxField name="ethics.editorsOwnArticlesIndependentlyReviewed" />
     </section>
   );
 }
