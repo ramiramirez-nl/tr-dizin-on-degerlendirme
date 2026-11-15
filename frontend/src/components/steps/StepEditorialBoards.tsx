@@ -25,7 +25,6 @@ export function StepEditorialBoards() {
       <CheckboxField name="editorialBoards.boardOneThirdExternal" />
       <CheckboxField name="editorialBoards.hasFieldEditors" />
       <CheckboxField name="editorialBoards.hasLanguageEditors" />
-      <CheckboxField name="editorialBoards.hasAdvisoryBoard" />
       <CheckboxField name="editorialBoards.boardCompetenceStated" />
     </section>
   );

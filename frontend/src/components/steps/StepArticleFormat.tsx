@@ -6,7 +6,7 @@ import { CheckboxField } from '../CheckboxField';
 import { GroupHeading, SelectField, StepHeading } from '../FormControls';
 import { URL_PATTERN } from '../../utils/validation';
 
-const REFERENCE_STYLES = ['APA', 'MLA', 'AIP', 'NLM', 'AMA', 'ACS', 'Chicago', 'Other'] as const;
+const REFERENCE_STYLES = ['APA', 'MLA', 'AIP', 'NLM', 'AMA', 'ACS', 'Chicago', 'ISNAD', 'Other'] as const;
 
 export function StepArticleFormat() {
   const { register, watch, formState: { errors } } = useFormContext<FormData>();

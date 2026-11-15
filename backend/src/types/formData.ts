@@ -47,7 +47,6 @@ export interface EditorialBoardsData {
   boardOneThirdExternal: boolean; // K4
   hasFieldEditors: boolean; // K2
   hasLanguageEditors: boolean; // K3
-  hasAdvisoryBoard: boolean; // K4
   boardCompetenceStated: boolean; // K5
 }
 

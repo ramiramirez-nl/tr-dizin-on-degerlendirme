@@ -26,7 +26,6 @@ const good: EditorialBoardsData = {
   boardOneThirdExternal: true,
   hasFieldEditors: true,
   hasLanguageEditors: true,
-  hasAdvisoryBoard: true,
   boardCompetenceStated: true,
 };
 const run = (d: EditorialBoardsData, lang?: string) => validateEditorialBoards(d, lang) as Promise<Item[]>;
@@ -34,7 +33,7 @@ const run = (d: EditorialBoardsData, lang?: string) => validateEditorialBoards(d
 describe('validateEditorialBoards', () => {
   it('passes everything on the happy path', async () => {
     const items = await run(good, 'tr');
-    expect(items).toHaveLength(6);
+    expect(items).toHaveLength(5);
     expect(items.every((i) => i.status === 'pass' && i.section === 'Editorial Boards')).toBe(true);
   });
 
@@ -43,7 +42,7 @@ describe('validateEditorialBoards', () => {
     expect(byField(items, field).status).toBe('fail');
   });
 
-  it.each(['hasFieldEditors', 'hasAdvisoryBoard', 'boardCompetenceStated'] as const)('warns when %s is not declared', async (field) => {
+  it.each(['hasFieldEditors', 'boardCompetenceStated'] as const)('warns when %s is not declared', async (field) => {
     const items = await run({ ...good, [field]: undefined as unknown as boolean });
     expect(byField(items, field).status).toBe('warning');
   });

@@ -58,7 +58,7 @@ Bir çalıştırma genellikle 30 ile 90 saniye sürer. Sonuçlar bölüm bölüm
 | ---- | ----- | --------------- |
 | 1. Dergi Kimliği | `identity` | Yayımlanmış sayı sayısı, yıllık sayı aralığı, ISSN kaydı ve ana sayfadaki görünürlüğü, dergi adı, yayın dilleri, hakemli ve bilimsel olduğunun belirtilmesi |
 | 2. Web Sayfası ve Politikalar | `website` | Amaç ve kapsam, yazım kuralları, yayın politikası, dergi bilgilerinin eksiksizliği, dergi tarihçesi, dizinleme beyanları |
-| 3. Editöryal Kurullar | `editorialBoards` | Kurul üyelerinin kurumları, dış kurum oranı, alan ve dil editörleri, danışma kurulu, kurul yetkinlikleri |
+| 3. Editöryal Kurullar | `editorialBoards` | Kurul üyelerinin kurumları, dış kurum oranı, alan ve dil editörleri, kurul yetkinlikleri |
 | 4. Hakem Süreci | `peerReview` | En az iki hakem, farklı kurumlardan hakemler, üçüncü hakem, rapor saklama süresi, rapor içeriği, intihal taraması |
 | 5. Makale Formatı | `articleFormat` | Öz ve anahtar kelimeler, makale türü, gönderim ve kabul tarihleri, kurum ve ORCID bilgisi, kaynakça, sayfa numaralandırma, reklam |
 | 6. Etik | `ethics` | Etik politikası, rol bazlı bölümler, COPE veya ICMJE atfı, etik kurul onayı, beyanlar, telif hakları |
@@ -253,7 +253,7 @@ A typical run takes 30 to 90 seconds. Results stream in live, section by section
 | ---- | ------- | -------------- |
 | 1. Identity | `identity` | Published issue count, issues per year, ISSN registration and homepage visibility, journal title, publication languages, peer-reviewed and scientific status |
 | 2. Website & Policies | `website` | Aims and scope, author guidelines, publication policy, completeness of journal information, journal history, indexing claims |
-| 3. Editorial Boards | `editorialBoards` | Board members' institutions, share of external members, field and language editors, advisory board, board competence |
+| 3. Editorial Boards | `editorialBoards` | Board members' institutions, share of external members, field and language editors, board competence |
 | 4. Peer Review | `peerReview` | At least two reviewers, reviewers from different institutions, third reviewer, report retention, report content, plagiarism screening |
 | 5. Article Format | `articleFormat` | Abstract and keywords, article type, submission and acceptance dates, affiliations and ORCID, references, page numbering, advertising |
 | 6. Ethics | `ethics` | Ethics policy, role-specific sections, COPE or ICMJE references, ethics committee approval, declarations, copyright |

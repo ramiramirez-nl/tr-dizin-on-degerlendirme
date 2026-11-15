@@ -158,14 +158,14 @@ const ROWS: Row[] = [
     severity: 'fail',
     ref: 'GH 5',
     tr: [
-      'Sayı kapağında dergi adı, yıl, cilt ve sayı bilgisi yer alıyor.',
-      'Sayı kapağında dergi adı, yıl, cilt ve sayı bilgisinin yer aldığı beyan edilmedi.',
-      'Her sayının kapağında dergi adını, yılı, cildi ve sayı numarasını belirtin.',
+      'Sayı kapağında dergi adı, yıl, (varsa) cilt ve sayı bilgisi yer alıyor.',
+      'Sayı kapağında dergi adı, yıl, (varsa) cilt ve sayı bilgisinin yer aldığı beyan edilmedi.',
+      'Her sayının kapağında dergi adını, yılı, (varsa) cildi ve sayı numarasını belirtin.',
     ],
     en: [
-      'The issue cover shows the journal name, year, volume and issue.',
-      'It was not declared that the issue cover shows journal name, year, volume and issue.',
-      'Show the journal name, year, volume and issue number on every issue cover.',
+      'The issue cover shows the journal name, year, (if any) volume and issue.',
+      'It was not declared that the issue cover shows journal name, year, (if any) volume and issue.',
+      'Show the journal name, year, (if any) volume and issue number on every issue cover.',
     ],
   },
   {
@@ -326,8 +326,8 @@ export async function validateArticleFormat(
     suggestion: hasStyle
       ? ''
       : pick(language, {
-          tr: 'APA, MLA, AIP, NLM, AMA, ACS, Chicago gibi bir atıf stilini seçin ve yazım kurallarında belirtin.',
-          en: 'Choose a citation style such as APA, MLA, AIP, NLM, AMA, ACS or Chicago and state it in the author guidelines.',
+          tr: 'APA, MLA, AIP, NLM, AMA, ACS, Chicago, ISNAD gibi bir atıf stilini seçin ve yazım kurallarında belirtin.',
+          en: 'Choose a citation style such as APA, MLA, AIP, NLM, AMA, ACS, Chicago or ISNAD and state it in the author guidelines.',
         }),
   });
 

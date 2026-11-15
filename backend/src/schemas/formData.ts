@@ -46,7 +46,6 @@ const editorialBoardsSchema = z.object({
   boardOneThirdExternal: triStateBool,
   hasFieldEditors: triStateBool,
   hasLanguageEditors: triStateBool,
-  hasAdvisoryBoard: triStateBool,
   boardCompetenceStated: triStateBool,
 });
 

@@ -90,6 +90,7 @@ describe('validateArticleFormat', () => {
   });
 
   it('fails an empty reference style', async () => {
+    expect(byField(await run({ ...good, referenceStyle: 'ISNAD' }), 'referenceStyle').status).toBe('pass');
     expect(byField(await run({ ...good, referenceStyle: '' }), 'referenceStyle').status).toBe('fail');
     expect(byField(await run({ ...good, referenceStyle: '  ' }), 'referenceStyle').status).toBe('fail');
   });

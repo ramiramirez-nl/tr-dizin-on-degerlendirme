@@ -26,10 +26,10 @@ export async function validateWebsite(
       data.authorGuidelinesUrl,
       SECTION,
       'authorGuidelinesUrl',
-      'Does this page contain detailed author guidelines (yazım kuralları) covering the format of the manuscript, tables, figures, headings, abstract and references, AND does it name a citation style such as APA, MLA, AIP, NLM, AMA, ACS or Chicago? The page may be in Turkish or English.',
+      'Does this page contain detailed author guidelines (yazım kuralları) covering the format of the manuscript, tables, figures, headings, abstract and references, AND does it name a citation style such as APA, MLA, AIP, NLM, AMA, ACS, Chicago or ISNAD? The page may be in Turkish or English.',
       {
-        tr: 'Yazım kurallarını (makale biçimi, tablo/şekil, başlıklar, özet ve kaynakça düzeni) ayrıntılı biçimde yayımlayın ve kullanılan atıf stilini (APA, MLA, AIP, NLM, AMA, ACS, Chicago vb.) açıkça belirtin. (K 11, GH 9)',
-        en: 'Publish detailed author guidelines (manuscript format, tables/figures, headings, abstract, reference layout) and name the citation style used (APA, MLA, AIP, NLM, AMA, ACS, Chicago, etc.). (K 11, GH 9)',
+        tr: 'Yazım kurallarını (makale biçimi, tablo/şekil, başlıklar, özet ve kaynakça düzeni) ayrıntılı biçimde yayımlayın ve kullanılan atıf stilini (APA, MLA, AIP, NLM, AMA, ACS, Chicago, ISNAD vb.) açıkça belirtin. (K 11, GH 9)',
+        en: 'Publish detailed author guidelines (manuscript format, tables/figures, headings, abstract, reference layout) and name the citation style used (APA, MLA, AIP, NLM, AMA, ACS, Chicago, ISNAD, etc.). (K 11, GH 9)',
       },
       language,
       { ref: 'K 11, GH 9' }

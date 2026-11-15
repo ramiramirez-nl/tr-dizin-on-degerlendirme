@@ -68,7 +68,6 @@ const DEFAULT_VALUES: FormData = {
     boardOneThirdExternal: false,
     hasFieldEditors: false,
     hasLanguageEditors: false,
-    hasAdvisoryBoard: false,
     boardCompetenceStated: false,
   },
   peerReview: {

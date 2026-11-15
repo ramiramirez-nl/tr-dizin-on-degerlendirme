@@ -83,25 +83,6 @@ export async function validateEditorialBoards(
     }),
     declaration({
       section: SECTION,
-      field: 'hasAdvisoryBoard',
-      ok: data.hasAdvisoryBoard,
-      severity: 'warning',
-      language,
-      pass: {
-        tr: 'Danışma kurulu bulunuyor. (K 4)',
-        en: 'An advisory board exists. (K 4)',
-      },
-      fail: {
-        tr: 'Danışma kurulunun bulunduğu beyan edilmedi. (K 4)',
-        en: 'It was not declared that an advisory board exists. (K 4)',
-      },
-      suggestion: {
-        tr: 'Varsa danışma kurulunu üyeleriyle birlikte web sitesinde yayımlayın.',
-        en: 'If you have an advisory board, publish it with its members on the website.',
-      },
-    }),
-    declaration({
-      section: SECTION,
       field: 'boardCompetenceStated',
       ok: data.boardCompetenceStated,
       severity: 'warning',

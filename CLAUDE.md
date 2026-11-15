@@ -55,7 +55,7 @@ Validators and backend tests use these short codes. At runtime `expandRefs()` in
 ### Form Structure (8 Steps)
 1. **Identity** (`identity`): journal title, homepage, ISSN, subject area, issues per year, published issue count, publication languages
 2. **Website & Policies** (`website`): aims and scope, author guidelines, publication policy, journal information, journal history, indexing claims
-3. **Editorial Boards** (`editorialBoards`): board URL, external board share, field and language editors, advisory board
+3. **Editorial Boards** (`editorialBoards`): board URL, external board share, field and language editors
 4. **Peer Review** (`peerReview`): review policy URL, reviewer count and institutions, report retention, report content, plagiarism screening
 5. **Article Format** (`articleFormat`): sample article URL, abstract and keywords, article type, dates, affiliations and ORCID, references, page numbering, advertising
 6. **Ethics** (`ethics`): ethics policy URL, role-specific sections, COPE/ICMJE references, ethics committee approval, declarations, copyright
