@@ -37,7 +37,7 @@
   "summary.pass": "Muhtemelen TR Dizin'e hazır",
   "summary.warning": "Dikkat gerekiyor",
   "summary.fail": "Henüz hazır değil",
-  "summary.checksInfo": "{{passCount}} kontrol geçti · {{failCount}} sorun bulundu",
+  "summary.checksInfo": "{{passCount}} kontrol geçti · {{failCount}} başarısız · {{warningCount}} uyarı",
   "validation.required": "Bu alan zorunludur.",
   "validation.url": "http(s):// ile başlayan geçerli bir URL girin.",
   "validation.issn": "1234-5678 biçiminde geçerli bir ISSN girin.",

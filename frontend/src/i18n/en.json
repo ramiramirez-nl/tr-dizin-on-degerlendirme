@@ -37,7 +37,7 @@
   "summary.pass": "Likely TR Dizin-ready",
   "summary.warning": "Needs attention",
   "summary.fail": "Not yet ready",
-  "summary.checksInfo": "{{passCount}} checks passed · {{failCount}} issues found",
+  "summary.checksInfo": "{{passCount}} checks passed · {{failCount}} failed · {{warningCount}} warnings",
   "validation.required": "This field is required.",
   "validation.url": "Enter a valid URL starting with http(s)://.",
   "validation.issn": "Enter a valid ISSN in the format 1234-5678.",

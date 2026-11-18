@@ -6,9 +6,10 @@ interface Props {
   status: OverallStatus;
   passCount: number;
   failCount: number;
+  warningCount: number;
 }
 
-export function SummaryBanner({ status, passCount, failCount }: Props) {
+export function SummaryBanner({ status, passCount, failCount, warningCount }: Props) {
   const { t } = useTranslation();
   const styles: Record<OverallStatus, { bg: string; icon: string }> = {
     pass: { bg: 'bg-green-50 border-green-300 text-green-900', icon: '✓' },
@@ -24,7 +25,7 @@ export function SummaryBanner({ status, passCount, failCount }: Props) {
         </span>
         <div>
           <h2 className="text-lg font-semibold">{t(`summary.${status}`)}</h2>
-          <p className="text-sm">{t('summary.checksInfo', { passCount, failCount })}</p>
+          <p className="text-sm">{t('summary.checksInfo', { passCount, failCount, warningCount })}</p>
         </div>
       </div>
     </div>

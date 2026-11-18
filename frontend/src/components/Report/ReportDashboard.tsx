@@ -72,9 +72,8 @@ export function ReportDashboard({ report, onReset, onBack }: Props) {
         status={report.overallStatus}
         passCount={report.passCount}
         failCount={report.failCount}
+        warningCount={report.warningCount}
       />
-
-      <CriteriaLegend />
 
       {issues.length === 0 ? (
         <div className="rounded-md bg-white p-6 text-center text-gray-700 shadow-sm ring-1 ring-gray-200">

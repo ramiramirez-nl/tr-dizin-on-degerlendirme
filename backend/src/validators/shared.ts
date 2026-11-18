@@ -19,7 +19,7 @@ export interface Bilingual {
 
 const REF_NUM = '\\d+(?:\\.\\d+)?';
 const REF_TOKEN = new RegExp(
-  `(?:ÖK|GH|K|T) ${REF_NUM}(?:\\s*[–-]\\s*${REF_NUM})?|Sözleşme \\d+(?:\\s*[/,]\\s*\\d+)*`,
+  `(?:ÖK|GH|K|T) ${REF_NUM}(?:\\s*[–-]\\s*${REF_NUM})?|Sözleşme \\d+(?:\\s*[/,]\\s*\\d+)*|Başvuru Süreci ${REF_NUM}`,
   'g'
 );
 const REF_NAMES: Record<string, Bilingual> = {
@@ -28,6 +28,7 @@ const REF_NAMES: Record<string, Bilingual> = {
   GH: { tr: 'Genel Husus', en: 'General Point' },
   T: { tr: 'Tavsiye', en: 'Recommendation' },
   Sözleşme: { tr: 'Başvuru Sözleşmesi', en: 'Application Agreement' },
+  'Başvuru Süreci': { tr: 'Başvuru Süreci', en: 'Application Process' },
 };
 
 /**
@@ -42,7 +43,11 @@ export function expandRefs(text: string, language?: string): string {
     const rest = inner.replace(REF_TOKEN, '');
     if (rest === inner || /[^\s,;]/.test(rest)) return whole;
     const expanded = inner.replace(REF_TOKEN, (token) => {
-      const code = token.startsWith('Sözleşme') ? 'Sözleşme' : token.slice(0, token.indexOf(' '));
+      const code = token.startsWith('Sözleşme')
+        ? 'Sözleşme'
+        : token.startsWith('Başvuru Süreci')
+          ? 'Başvuru Süreci'
+          : token.slice(0, token.indexOf(' '));
       return `${REF_NAMES[code][lang]}${token.slice(code.length)}`;
     });
     return `(${expanded})`;

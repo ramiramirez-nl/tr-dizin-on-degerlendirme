@@ -34,6 +34,11 @@ describe('expandRefs', () => {
     expect(expandRefs('(K 18.3)', 'en')).toBe('(Criterion 18.3)');
   });
 
+  it('translates Başvuru Süreci references for English readers', () => {
+    expect(expandRefs('(Başvuru Süreci 1.3)', 'en')).toBe('(Application Process 1.3)');
+    expect(expandRefs('(Başvuru Süreci 1.3)', 'tr')).toBe('(Başvuru Süreci 1.3)');
+  });
+
   it('handles Sözleşme references', () => {
     expect(expandRefs('(Sözleşme 13/14)', 'tr')).toBe('(Başvuru Sözleşmesi 13/14)');
     expect(expandRefs('(Sözleşme 13, 14)', 'tr')).toBe('(Başvuru Sözleşmesi 13, 14)');
