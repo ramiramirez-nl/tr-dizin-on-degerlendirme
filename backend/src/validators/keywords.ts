@@ -20,14 +20,20 @@ export const KEYWORDS = {
     'hakem', 'değerlendir', 'kör', 'blind', 'review', 'referee', 'iki', 'two', 'çift', 'double',
   ],
   peerReviewDetail: [
-    'hakem', 'değerlendir', 'süre', 'gün', 'hafta', 'karar', 'aşama', 'adım', 'ön inceleme', 'editör',
-    'review', 'days', 'weeks', 'decision', 'stage', 'step',
+    'hakem', 'değerlendir', 'kör', 'çift', 'blind', 'süre', 'gün', 'hafta', 'karar', 'aşama', 'adım',
+    'ön inceleme', 'editör', 'review', 'days', 'weeks', 'decision', 'stage', 'step',
   ],
   plagiarism: ['intihal', 'benzerlik', 'ithenticate', 'turnitin', 'intihal.net', 'plagiarism', 'similarity'],
   sampleArticle: [
     'özet', 'öz', 'abstract', 'anahtar kelime', 'keywords', 'geliş', 'kabul', 'received', 'accepted', 'orcid',
     'üniversite', 'university', 'kaynakça', 'kaynaklar', 'references', 'araştırma makalesi', 'research article',
     'derleme', 'makale türü',
+  ],
+  /** First pages of an article PDF: cover, abstracts, keywords, dates, citation line. */
+  articleFrontMatter: [
+    'keywords', 'key words', 'anahtar kelime', 'anahtar sözcük', 'abstract', 'öz', 'özet', 'received', 'accepted',
+    'geliş', 'kabul', 'orcid', 'research article', 'araştırma makalesi', 'review article', 'derleme', 'makale türü',
+    'article type', 'cite', 'atıf', 'citation', 'doi', 'university', 'üniversite', 'jel',
   ],
   ethics: [
     'etik', 'ethic', 'cope', 'icmje', 'sorumlulu', 'responsibilit', 'bildirge', 'yazar', 'hakem', 'editör',

@@ -14,10 +14,10 @@ export async function validatePeerReview(
     data.peerReviewPolicyUrl,
     SECTION,
     'peerReviewPolicyUrl',
-    'Does this page describe the journal\'s peer review (hakemlik) process, including that each article is reviewed by at least two reviewers and what kind of blinding is used (single, double or open)? The page may be in Turkish or English.',
+    'Does this page describe the journal\'s peer review (hakemlik) process and state that each article is reviewed by at least two reviewers? Wording such as "en az iki hakem", "iki hakeme gönderilir" or "at least two reviewers" counts. The type of blinding is NOT required here. The page may be in Turkish or English.',
     {
-      tr: 'Hakemlik sürecini (en az iki hakem, körleme türü, değerlendirme adımları) anlatan bir sayfa yayımlayın. (K 15)',
-      en: 'Publish a page describing the peer review process (at least two reviewers, type of blinding, review steps). (K 15)',
+      tr: 'Hakemlik sürecini anlatan ve her makalenin en az iki hakem tarafından değerlendirildiğini belirten bir sayfa yayımlayın. (K 15)',
+      en: 'Publish a page that describes the peer review process and states that every article is reviewed by at least two reviewers. (K 15)',
     },
     language,
     { ref: 'K 15', keywords: [...KEYWORDS.peerReview] }
@@ -168,10 +168,10 @@ export async function validatePeerReview(
       data.peerReviewPolicyUrl,
       SECTION,
       'peerReviewProcessDetailed',
-      'Does this page describe the peer review process in detail: the steps from submission to decision, the expected timing or deadlines, how the editor decides, and how the reviewers\' opinions are used and returned to the authors? The page may be in Turkish or English.',
+      'Does this page describe the peer review process in detail: the type of blinding (single-blind, double-blind or open), the steps from submission to decision, the expected timing or deadlines, how the editor decides, and how the reviewers\' opinions are used and returned to the authors? The page may be in Turkish or English.',
       {
-        tr: 'Hakemlik sürecini adım adım (başvurudan karara kadar), süreleri ve hakem görüşlerinin nasıl kullanıldığını içerecek biçimde ayrıntılandırın. (K 15)',
-        en: 'Describe the peer review process step by step, from submission to decision, including timing and how reviewer opinions are used. (K 15)',
+        tr: 'Hakemlik sürecini körleme türü (tek kör, çift kör veya açık), başvurudan karara kadarki adımlar, süreler ve hakem görüşlerinin nasıl kullanıldığıyla birlikte hakemlik sayfasında ayrıntılandırın. (K 15)',
+        en: 'Describe the peer review process on the review page with the type of blinding (single-blind, double-blind or open), the steps from submission to decision, timing and how reviewer opinions are used. (K 15)',
       },
       language,
       { ref: 'K 15', keywords: [...KEYWORDS.peerReviewDetail] }

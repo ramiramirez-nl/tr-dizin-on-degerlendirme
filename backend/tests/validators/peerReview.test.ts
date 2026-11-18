@@ -104,3 +104,13 @@ describe('validatePeerReview', () => {
     expect(byField(await run(bad, 'en'), 'reportsKeptFiveYears').message).toContain('five years');
   });
 });
+
+describe('peer review criteria follow K 15', () => {
+  it('does not require the blinding type on the main check, only on the detail check', async () => {
+    await validatePeerReview(good, 'tr');
+    const criteria = ai.mock.calls.map((c) => c[0].criteria as string);
+    const main = criteria.find((c) => c.includes('at least two reviewers'));
+    expect(main).toContain('NOT required');
+    expect(criteria.some((c) => c.includes('in detail') && c.includes('blinding'))).toBe(true);
+  });
+});

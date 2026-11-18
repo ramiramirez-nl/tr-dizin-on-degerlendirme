@@ -67,18 +67,29 @@ describe('validateArticleFormat', () => {
     await run(good);
     expect(ai).toHaveBeenCalledTimes(2);
     const calls = ai.mock.calls.map((c) => c[0]);
-    const main = calls.find((c) => (c.criteria as string).includes('citation line on the FIRST PAGE'));
+    const main = calls.find((c) => (c.criteria as string).includes('citation line on page 1'));
     expect(main).toBeDefined();
-    expect(main.pageText).toContain('İLK SAYFA');
+    expect(main.pageText).toContain('İLK SAYFALAR');
+    expect(main.budget).toBeGreaterThan(4000);
     expect(main.pageText).toContain('KAYNAKÇA BAŞLANGICI');
     expect(main.pageText).toContain('Çıkar Çatışması');
     expect(calls.some((c) => (c.criteria as string).includes('conflict of interest'))).toBe(true);
   });
 
-  it('treats a readable PDF as evidence that its text can be copied', async () => {
+  it('treats a readable PDF as evidence that its text can be copied, and quotes a line', async () => {
     scrape.mockResolvedValue(articlePdf);
     const items = await run({ ...good, pdfTextCopyable: undefined as unknown as boolean });
-    expect(byField(items, 'pdfTextCopyable').status).toBe('pass');
+    const item = byField(items, 'pdfTextCopyable') as Item & { evidence?: string };
+    expect(item.status).toBe('pass');
+    expect(item.evidence).toContain('Geliş: 01.01.2025');
+  });
+
+  it('warns instead of failing when front-matter lines had to be left out of the PDF excerpt', async () => {
+    const crowded = Array.from({ length: 120 }, (_v, i) => `Abstract satırı ${i}: keywords, received, accepted, ORCID ve üniversite bilgileri burada uzun uzun anlatılır.`).join('\n');
+    scrape.mockResolvedValue({ ...articlePdf, pdfPages: [crowded, crowded, crowded, 'Kaynakça\nSmith (2020).'] });
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: ['anahtar kelimeler'] });
+    const item = byField(await run(good), 'sampleArticleUrl');
+    expect(item.status).toBe('warning');
   });
 
   it('fails the copyable-text rule for a scanned PDF without a text layer', async () => {

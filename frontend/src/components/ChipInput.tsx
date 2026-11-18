@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ChipInputProps {
@@ -11,6 +11,7 @@ interface ChipInputProps {
 export function ChipInput({ label, values, onChange, hint }: ChipInputProps) {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
+  const inputId = useId();
 
   const add = (raw: string) => {
     const items = raw
@@ -25,7 +26,9 @@ export function ChipInput({ label, values, onChange, hint }: ChipInputProps) {
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={inputId} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2 py-1.5 shadow-sm focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
         {values.map((item) => (
           <span
@@ -44,6 +47,7 @@ export function ChipInput({ label, values, onChange, hint }: ChipInputProps) {
           </span>
         ))}
         <input
+          id={inputId}
           className="min-w-[10rem] flex-1 border-0 p-0.5 text-sm focus:outline-none focus:ring-0"
           value={input}
           placeholder={values.length === 0 ? t('chipInput.placeholder') : ''}

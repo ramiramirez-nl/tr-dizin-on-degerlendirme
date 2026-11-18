@@ -32,6 +32,8 @@ export interface AnalysisInput {
   criteria: string;
   /** Words that mark the passages this check needs; used to pick parts of long pages. */
   keywords?: string[];
+  /** Characters of page text to send; defaults to PAGE_TEXT_BUDGET. */
+  budget?: number;
   url: string;
   language?: string;
 }
@@ -106,7 +108,7 @@ export async function analyzePageContent(
     };
   }
 
-  const selection = selectPassages(input.pageText, input.keywords, PAGE_TEXT_BUDGET);
+  const selection = selectPassages(input.pageText, input.keywords, input.budget ?? PAGE_TEXT_BUDGET);
   const excerpt = selection.text;
   const excerptNote =
     excerpt.length < input.pageText.length

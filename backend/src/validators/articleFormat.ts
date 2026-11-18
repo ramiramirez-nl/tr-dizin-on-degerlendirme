@@ -333,7 +333,7 @@ export async function validateArticleFormat(
   ] as const) {
     results.push(
       field === 'pdfTextCopyable' && sample.pdfTextCopyable !== undefined
-        ? copyableFromPdf(sample.pdfTextCopyable, data.sampleArticleUrl, language)
+        ? copyableFromPdf(sample.pdfTextCopyable, data.sampleArticleUrl, language, sample.pdfSample)
         : toItem(rowFor(field))
     );
   }
@@ -341,7 +341,7 @@ export async function validateArticleFormat(
 }
 
 /** The sample PDF was read: whether its text came out is evidence, not a declaration. */
-function copyableFromPdf(copyable: boolean, url: string, language?: string): ReportItem {
+function copyableFromPdf(copyable: boolean, url: string, language?: string, sample?: string): ReportItem {
   return {
     section: SECTION,
     field: 'pdfTextCopyable',
@@ -362,5 +362,6 @@ function copyableFromPdf(copyable: boolean, url: string, language?: string): Rep
           en: 'Produce PDFs with selectable, copyable text rather than scanned images.',
         }),
     url,
+    ...(copyable && sample ? { evidence: sample } : {}),
   };
 }

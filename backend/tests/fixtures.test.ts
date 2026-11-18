@@ -32,7 +32,7 @@ function keywordsFor(name: string): string[] {
 /** What the AI receives for this page: selected passages, or the PDF excerpt. */
 async function aiText(c: FixtureCase): Promise<string> {
   const bytes = readFileSync(join(DIR, c.file));
-  if (c.file.endsWith('.pdf')) return pdfExcerpt(await extractPdfPages(bytes));
+  if (c.file.endsWith('.pdf')) return pdfExcerpt(await extractPdfPages(bytes)).text;
   const { text } = parseHtml(bytes.toString('utf8'), c.url);
   return selectPassages(text, keywordsFor(c.keywords), PAGE_TEXT_BUDGET).text;
 }

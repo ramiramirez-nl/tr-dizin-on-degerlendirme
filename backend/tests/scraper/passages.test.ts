@@ -66,6 +66,31 @@ describe('selectPassages', () => {
     expect(selectPassages(page, ['issn'], 2000).text).toContain('e-ISSN: 2651-4117');
   });
 
+  it('keeps role headings even when keyword-heavy body paragraphs exceed the budget', () => {
+    const body = (role: string) =>
+      Array.from({ length: 12 }, (_v, i) =>
+        `${role} ${i}: Yazar, hakem ve editör etik ilkelere uymalıdır; editör yazarın ve hakemin haklarını korur, hakem yazar ile editör arasındaki gizliliğe uyar ve etik ihlalleri editöre bildirir.`
+      ).join('\n');
+    const ethics = [
+      'Yayın Etiği',
+      'Dergi, COPE tarafından hazırlanan Yürütme Kılavuzu ve Uygulama Rehberini izlemeyi taahhüt eder.',
+      'Yayın Etiği Bildirgesi',
+      'Editör ve Editör Kurulunun Sorumlulukları',
+      body('Editör'),
+      'Yayın Kurulunun Sorumlulukları',
+      body('Kurul'),
+      'Hakemlerin Sorumlulukları',
+      body('Hakem'),
+      'Yazarların Sorumlulukları',
+      body('Yazar'),
+    ].join('\n');
+    expect(ethics.length).toBeGreaterThan(8000);
+    const { text } = selectPassages(ethics, [...KEYWORDS.ethics], 4000);
+    for (const heading of ['Yayın Etiği Bildirgesi', 'Editör ve Editör Kurulunun Sorumlulukları', 'Hakemlerin Sorumlulukları', 'Yazarların Sorumlulukları', 'COPE']) {
+      expect(text).toContain(heading);
+    }
+  });
+
   it('finds every role section of a long ethics page', () => {
     const ethics = [
       'Yayın Etiği',
@@ -82,5 +107,28 @@ describe('selectPassages', () => {
     for (const heading of ['COPE', 'Editör ve Editör Kurulunun Sorumlulukları', 'Hakemlerin Sorumlulukları', 'Yazarların Sorumlulukları']) {
       expect(text).toContain(heading);
     }
+  });
+});
+
+describe('pdfExcerpt', () => {
+  const abstractTr = 'Öz\n' + 'Bu çalışma Avrupa ülkelerinde bilgi ve iletişim teknolojileri performansını karşılaştırmalı olarak değerlendirmektedir. '.repeat(14);
+  const abstractEn = 'Abstract\n' + 'This study compares the ICT performance of European countries with a hybrid multi-criteria decision making framework. '.repeat(14);
+
+  it('reaches the English keywords on page 3 when cover and abstracts span three pages', async () => {
+    const { pdfExcerpt } = await import('../../src/validators/sampleArticle');
+    const pages = [
+      'Araştırma Makalesi / Research Article\nGeliş: 02.04.2026 Kabul: 05.06.2026\nAtıf: Onat, K. T. (2026). Dergi, 28(Özel Sayı), 1-20.',
+      `${abstractTr}\nAnahtar Kelimeler: Dijital Rekabetçilik, BİT`,
+      `${abstractEn}\nKeywords: Digital Competitiveness, ICT, Europe, MCDM`,
+      'Giriş\n' + 'Gövde. '.repeat(400),
+      'Kaynakça\nSmith, J. (2020). Title.',
+    ];
+    expect(pages[1].length + pages[2].length).toBeGreaterThan(3000);
+    const { text, partial } = pdfExcerpt(pages);
+    expect(text).toContain('Keywords: Digital Competitiveness');
+    expect(text).toContain('Anahtar Kelimeler: Dijital Rekabetçilik');
+    expect(text).toContain('Geliş: 02.04.2026');
+    expect(text).toContain('--- Sayfa / Page 3 ---');
+    expect(partial).toBe(false);
   });
 });

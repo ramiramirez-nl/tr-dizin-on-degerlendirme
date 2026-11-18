@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { FormData } from '../../types/form.types';
 import { FieldError, StepHeading } from '../FormControls';
 import { computeAgreement, type AgreementResult } from '../../utils/agreement';
+import { declarationCount, hiddenDeclarations } from '../../utils/declarationCount';
 
 const CRITERIA_URL = 'https://trdizin.gov.tr/kriterler/';
 
@@ -15,12 +16,6 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
       </dd>
     </div>
   );
-}
-
-/** Counts the checked boolean declarations of a section. */
-function declarationCount(section: object | undefined): string {
-  const values = Object.values(section ?? {}).filter((v): v is boolean => typeof v === 'boolean');
-  return `${values.filter(Boolean).length} / ${values.length}`;
 }
 
 function AgreementMark({ result }: { result: AgreementResult }) {
@@ -49,8 +44,9 @@ export function StepReview() {
     ? t(`option.metadataSubmissionMethod.${data.content.metadataSubmissionMethod}`)
     : '';
   const num = (n: number | undefined) => (n === undefined || Number.isNaN(n) ? '' : String(n));
-  const declarations = (section: object | undefined) => (
-    <Row label={t('step.review.declarations')} value={declarationCount(section)} />
+  const hidden = hiddenDeclarations(data);
+  const declarations = (section: object | undefined, name?: string) => (
+    <Row label={t('step.review.declarations')} value={declarationCount(section, name ? hidden[name] : [])} />
   );
 
   return (
@@ -74,7 +70,7 @@ export function StepReview() {
           <Row label={t('step.review.authorGuidelinesUrl')} value={data.website?.authorGuidelinesUrl} />
           <Row label={t('step.review.publicationPolicyUrl')} value={data.website?.publicationPolicyUrl} />
           <Row label={t('step.review.feePolicyUrl')} value={data.website?.feePolicyUrl} />
-          {declarations(data.website)}
+          {declarations(data.website, 'website')}
         </dl>
         <h3 className="mb-2 mt-4 font-semibold">{t('steps.editorialBoards')}</h3>
         <dl>
@@ -91,7 +87,7 @@ export function StepReview() {
         <dl>
           <Row label={t('step.review.sampleArticleUrl')} value={data.articleFormat?.sampleArticleUrl} />
           <Row label={t('step.review.referenceStyle')} value={data.articleFormat?.referenceStyle} />
-          {declarations(data.articleFormat)}
+          {declarations(data.articleFormat, 'articleFormat')}
         </dl>
         <h3 className="mb-2 mt-4 font-semibold">{t('steps.ethics')}</h3>
         <dl>
@@ -105,7 +101,7 @@ export function StepReview() {
           <Row label={t('step.review.combinedIssuesLast3Years')} value={num(data.content?.combinedIssuesLast3Years)} />
           <Row label={t('step.review.specialIssuesLastYear')} value={num(data.content?.specialIssuesLastYear)} />
           <Row label={t('step.review.metadataSubmissionMethod')} value={method} />
-          {declarations(data.content)}
+          {declarations(data.content, 'content')}
         </dl>
       </div>
 

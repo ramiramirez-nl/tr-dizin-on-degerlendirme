@@ -1,4 +1,5 @@
 import type { ReportResponse, ReportItem } from '../types/form.types';
+import { sectionLabel } from './sectionLabel';
 
 /** Official TR Dizin criteria page that the legend links to. */
 export const CRITERIA_URL = 'https://trdizin.gov.tr/kriterler/';
@@ -17,11 +18,15 @@ const STATUS_COLOR: Record<ReportItem['status'], string> = {
   fail: '#b91c1c',
 };
 
-function renderItem(item: ReportItem, suggestionLabel: string, evidenceLabel: string): string {
+type Translate = (key: string, options?: Record<string, unknown>) => string;
+
+const STATUS_ORDER: Record<ReportItem['status'], number> = { fail: 0, warning: 1, pass: 2 };
+
+function renderItem(item: ReportItem, suggestionLabel: string, evidenceLabel: string, t: Translate): string {
   const color = STATUS_COLOR[item.status];
   const parts = [
     `<div style="border:1px solid #e5e7eb;border-left:4px solid ${color};border-radius:6px;padding:12px;margin-bottom:10px;">`,
-    `<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:${color};font-weight:600;">${escapeHtml(item.status)} — ${escapeHtml(item.section)} / ${escapeHtml(item.field)}</div>`,
+    `<div style="font-size:12px;color:${color};font-weight:600;"><span lang="en">${escapeHtml(item.status.toUpperCase())}</span> — ${escapeHtml(sectionLabel(item.section, t))} <span lang="en" style="font-family:monospace;font-weight:400;color:#6b7280;">${escapeHtml(item.field)}</span></div>`,
     `<div style="margin-top:4px;font-size:14px;color:#111827;">${escapeHtml(item.message)}</div>`,
   ];
   if (item.evidence) {
@@ -46,9 +51,10 @@ function renderItem(item: ReportItem, suggestionLabel: string, evidenceLabel: st
 export function buildReportHtml(
   report: ReportResponse,
   lang: string,
-  t: (key: string) => string
+  t: Translate
 ): string {
-  const all = report.items ?? report.issues;
+  // Same order as the dashboard: what needs attention comes first.
+  const all = [...(report.items ?? report.issues)].sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
   const suggestionLabel = t('report.suggestionLabel');
   const evidenceLabel = t('report.evidenceLabel');
   const generated = new Date().toLocaleString(lang);
@@ -69,15 +75,15 @@ export function buildReportHtml(
 <body>
   <h1>${escapeHtml(t('app.title'))}</h1>
   <p class="legend">${escapeHtml(t('legend.text'))} <a href="${CRITERIA_URL}">${CRITERIA_URL}</a></p>
-  <div class="meta">${escapeHtml(generated)} — ${escapeHtml(report.overallStatus.toUpperCase())} · ${report.passCount} / ${report.failCount} / ${report.warningCount}</div>
-  ${all.map((item) => renderItem(item, suggestionLabel, evidenceLabel)).join('\n')}
+  <div class="meta">${escapeHtml(generated)} — ${escapeHtml(t(`summary.${report.overallStatus}`))} · ${escapeHtml(t('summary.checksInfo', { passCount: report.passCount, failCount: report.failCount, warningCount: report.warningCount }))}</div>
+  ${all.map((item) => renderItem(item, suggestionLabel, evidenceLabel, t)).join('\n')}
   <div class="disclaimer">${escapeHtml(t('report.trdizinDisclaimer'))}</div>
 </body>
 </html>
 `;
 }
 
-export function downloadReportHtml(report: ReportResponse, lang: string, t: (key: string) => string): void {
+export function downloadReportHtml(report: ReportResponse, lang: string, t: Translate): void {
   const html = buildReportHtml(report, lang, t);
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);

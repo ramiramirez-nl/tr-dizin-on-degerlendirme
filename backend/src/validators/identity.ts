@@ -242,8 +242,8 @@ function metadataItems(
     status: hasLanguages ? 'pass' : 'fail',
     message: hasLanguages
       ? pick(language, {
-          tr: `Yayın dili belirtildi: ${data.publicationLanguages.join(', ')}. (ÖK 8)`,
-          en: `Publication language(s) provided: ${data.publicationLanguages.join(', ')}. (ÖK 8)`,
+          tr: `Formda yayın dilleri girildi: ${data.publicationLanguages.join(', ')}. Bu dillerin dergi sitesinde yazması ayrıca kontrol edilir. (ÖK 8)`,
+          en: `Publication languages entered in the form: ${data.publicationLanguages.join(', ')}. Whether the journal website states them is checked separately. (ÖK 8)`,
         })
       : pick(language, {
           tr: 'Dergi yayın dili belirtilmedi. (ÖK 8)',

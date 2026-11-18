@@ -1,19 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SECTION_TO_STEP_KEY } from '../utils/sectionLabel';
 
 export type SectionStatus = 'checking' | 'pass' | 'warning' | 'fail';
 
-// Maps the section names streamed by the backend to the already-translated
-// step navigation labels, so no new translation keys are needed per section.
-const SECTION_TO_STEP_KEY: Record<string, string> = {
-  Identity: 'steps.identity',
-  Website: 'steps.website',
-  'Editorial Boards': 'steps.editorialBoards',
-  'Peer Review': 'steps.peerReview',
-  'Article Format': 'steps.articleFormat',
-  Ethics: 'steps.ethics',
-  Content: 'steps.content',
-};
 
 const statusIcon: Record<SectionStatus, string> = {
   checking: '',

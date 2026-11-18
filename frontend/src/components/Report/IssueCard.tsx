@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { ReportItem } from '../../types/form.types';
+import { sectionLabel } from '../../utils/sectionLabel';
 
 const styles: Record<ReportItem['status'], { ring: string; tag: string; label: string }> = {
   pass: { ring: 'ring-green-200', tag: 'bg-green-100 text-green-800', label: 'PASS' },
@@ -20,8 +21,10 @@ export function IssueCard({ item }: { item: ReportItem }) {
     <article className={`rounded-md bg-white p-4 shadow-sm ring-1 ${s.ring}`}>
       <header className="mb-2 flex flex-wrap items-center gap-2">
         <span className={`rounded px-2 py-0.5 text-xs font-semibold ${s.tag}`}>{s.label}</span>
-        <span className="text-xs uppercase tracking-wide text-gray-500">
-          {item.section} · {item.field}
+        {/* No CSS uppercase: with lang="tr" it turns "i" into "İ". */}
+        <span className="text-xs font-medium text-gray-600">{sectionLabel(item.section, t)}</span>
+        <span lang="en" className="font-mono text-xs text-gray-400">
+          {item.field}
         </span>
         {item.confidence && (
           <span className={`rounded px-2 py-0.5 text-xs font-medium ${confidenceTag[item.confidence]}`}>

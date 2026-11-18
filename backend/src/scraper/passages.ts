@@ -22,6 +22,8 @@ export interface PassageSelection {
 const OMISSION = '[...]';
 /** Blocks longer than this are cut into sentence groups before scoring. */
 const MAX_BLOCK = 600;
+/** Matching blocks up to this length are treated as headings and kept first. */
+const HEADING_MAX = 80;
 
 /** Lowercase without Turkish dotted/dotless I pitfalls, so "ISSN" matches "issn". */
 export function foldCase(s: string): string {
@@ -61,27 +63,38 @@ export function selectPassages(text: string, keywords: string[] | undefined, bud
 
   const blocks = splitBlocks(text);
   const patterns = keywords.map((k) => new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(foldCase(k))}`, 'gu'));
-  const scores = blocks.map((block) => {
-    const folded = foldCase(block);
+  const folded = blocks.map(foldCase);
+  const scores = folded.map((block) => {
     let hits = 0;
-    for (const p of patterns) hits += folded.match(p)?.length ?? 0;
+    for (const p of patterns) hits += block.match(p)?.length ?? 0;
     return hits;
   });
 
   if (scores.every((s) => s === 0)) return { text: text.slice(0, budget), partial: false };
 
-  // A matching block's neighbours are usually its heading or its continuation;
-  // they rank right after the matches themselves.
-  const priority = scores.map((s, i) => {
-    if (s > 0) return s * 10;
-    const near = (scores[i - 1] ?? 0) > 0 || (scores[i + 1] ?? 0) > 0;
-    return near ? 1 : 0;
-  });
-
-  const order = blocks
-    .map((_b, i) => i)
-    .filter((i) => priority[i] > 0)
-    .sort((a, b) => priority[b] - priority[a] || a - b);
+  // Order of admission, each step skipping blocks already taken:
+  // 1. Short matching blocks: section headings ("Hakemlerin Sorumlulukları"),
+  //    cheap and proof that a section exists.
+  // 2. For each keyword, the first block that contains it, so a rare but
+  //    decisive word (COPE, ICMJE, Keywords) is not crowded out.
+  // 3. Remaining matching blocks by keyword density, so one long paragraph
+  //    that repeats "yazar" and "hakem" cannot use up the budget.
+  // 4. Neighbours of matches (their heading or continuation).
+  const indices = blocks.map((_b, i) => i);
+  const matching = indices.filter((i) => scores[i] > 0);
+  const headings = matching
+    .filter((i) => blocks[i].length <= HEADING_MAX)
+    .sort((a, b) => scores[b] - scores[a] || a - b);
+  const firstPerKeyword = patterns
+    .map((p) => matching.find((i) => folded[i].search(new RegExp(p.source, 'u')) >= 0))
+    .filter((i): i is number => i !== undefined);
+  const byDensity = [...matching].sort(
+    (a, b) => scores[b] / blocks[b].length - scores[a] / blocks[a].length || a - b
+  );
+  const neighbours = indices.filter(
+    (i) => scores[i] === 0 && ((scores[i - 1] ?? 0) > 0 || (scores[i + 1] ?? 0) > 0)
+  );
+  const order = [...new Set([...headings, ...firstPerKeyword, ...byDensity, ...neighbours])];
 
   const chosen = new Set<number>();
   let used = 0;

@@ -1,5 +1,6 @@
 import { scrapeUrl } from '../scraper/pageScraper';
 import type { ReportItem } from '../types/report';
+import { selectPassages } from '../scraper/passages';
 import { KEYWORDS } from './keywords';
 import { checkUrl, pick } from './shared';
 
@@ -15,17 +16,46 @@ export interface SampleArticleResult {
   items: ReportItem[];
   /** Set only when the URL served a PDF: whether its text could be extracted. */
   pdfTextCopyable?: boolean;
+  /** A line of the PDF's text, as evidence for the copyable-text rule. */
+  pdfSample?: string;
+}
+
+/** Article front matter (cover, Turkish and English abstract pages) can span this many pages. */
+const FRONT_PAGES = 3;
+/** Characters of front matter sent to the AI. */
+const FRONT_BUDGET = 3000;
+/** Total AI budget for a PDF check: front matter plus the end of the article. */
+export const PDF_AI_BUDGET = 5500;
+
+export interface PdfExcerpt {
+  text: string;
+  /** True when lines that matched the front-matter keywords had to be left out. */
+  partial: boolean;
 }
 
 /**
- * The parts of an article PDF that TR Dizin rules talk about: the first page
- * (type, dates, affiliations, ORCID, abstract, citation line), the end of the
- * article before the references (declarations, ethics approval), the start of
- * the reference list and the last page. Kept within the AI text budget.
+ * The parts of an article PDF that TR Dizin rules talk about, within the AI
+ * budget: the first pages (cover, abstracts, keywords, type, dates,
+ * affiliations, ORCID, citation line), the end of the article before the
+ * references (declarations, ethics approval), the start of the reference list
+ * and the last page. Each front page keeps its page marker so the AI can tell
+ * what is on the first page.
  */
-export function pdfExcerpt(pages: string[]): string {
+export function pdfExcerpt(pages: string[]): PdfExcerpt {
   const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)} [...]` : s);
-  const parts = [`=== İLK SAYFA / FIRST PAGE ===\n${clip(pages[0] ?? '', 1800)}`];
+  const front = pages.slice(0, Math.min(FRONT_PAGES, pages.length));
+  let remaining = FRONT_BUDGET;
+  let partial = false;
+  const frontParts = front.map((page, i) => {
+    // Short pages (a cover) leave their unused share to the pages after them.
+    const share = Math.floor(remaining / (front.length - i));
+    const picked = selectPassages(page, [...KEYWORDS.articleFrontMatter], share);
+    remaining -= picked.text.length;
+    partial ||= picked.partial;
+    return `--- Sayfa / Page ${i + 1} ---\n${picked.text}`;
+  });
+  const parts = [`=== İLK SAYFALAR / FIRST PAGES ===\n${frontParts.join('\n')}`];
+
   const body = pages.slice(1).join('\n');
   const match = REFERENCES_HEADING.exec(body);
   if (match) {
@@ -33,10 +63,19 @@ export function pdfExcerpt(pages: string[]): string {
     parts.push(`=== KAYNAKÇADAN ÖNCE / BEFORE THE REFERENCES ===\n${before.trim()}`);
     parts.push(`=== KAYNAKÇA BAŞLANGICI / START OF REFERENCES ===\n${clip(body.slice(match.index), 500)}`);
   }
-  if (pages.length > 1) {
-    parts.push(`=== SON SAYFA / LAST PAGE ===\n${clip(pages[pages.length - 1], match ? 500 : 1800)}`);
+  if (pages.length > FRONT_PAGES) {
+    parts.push(`=== SON SAYFA / LAST PAGE ===\n${clip(pages[pages.length - 1], match ? 500 : 1500)}`);
   }
-  return parts.join('\n');
+  return { text: parts.join('\n'), partial };
+}
+
+/** A short line of real text from the PDF, shown as evidence that the text can be copied. */
+export function pdfTextSample(pages: string[]): string | undefined {
+  for (const page of pages) {
+    const line = page.split('\n').find((l) => l.trim().length >= 25);
+    if (line) return line.trim().slice(0, 160);
+  }
+  return undefined;
 }
 
 export async function sampleArticleItems(url: string, language?: string): Promise<SampleArticleResult> {
@@ -73,13 +112,13 @@ export async function sampleArticleItems(url: string, language?: string): Promis
       url,
       SECTION,
       'sampleArticleUrl',
-      'This is text from a published article PDF, in labelled parts (first page, the part before the references, the start of the references, last page). Does it show ALL of the following: (1) an abstract and keywords in the language of the article; (2) an article type label such as research article or review; (3) submission (received) and acceptance dates; (4) author affiliations; (5) ORCID iDs; (6) a reference list in Latin script; (7) a citation line on the FIRST PAGE giving journal name, year, volume or issue, and pages? The article may be in Turkish or English.',
+      'This is text from a published article PDF, in labelled parts: the first pages with page markers (the cover and the Turkish and English abstract pages, selected lines), the part before the references, the start of the references and the last page. Does it show ALL of the following: (1) an abstract and keywords in the language of the article (the label may be "Keywords", "Key words", "Anahtar Kelimeler" or "Anahtar Sözcükler"); (2) an article type label such as research article or review; (3) submission (received) and acceptance dates; (4) author affiliations; (5) ORCID iDs; (6) a reference list in Latin script; (7) a citation line on page 1 giving journal name, year, volume or issue, and pages? The article may be in Turkish or English.',
       {
         tr: `Makalenin özet ve anahtar kelimeleri, makale türünü, geliş/kabul tarihlerini, yazar kurumlarını, ORCID numaralarını, Latin alfabeli kaynakçayı ve ilk sayfada atıf satırını içerdiğinden emin olun. (${REF})`,
         en: `Make sure the article shows the abstract and keywords, article type, received/accepted dates, author affiliations, ORCID iDs, a Latin-script reference list and a citation line on the first page. (${REF})`,
       },
       language,
-      { ref: REF, keywords: [...KEYWORDS.sampleArticle], textFrom }
+      { ref: REF, keywords: [...KEYWORDS.sampleArticle], textFrom, budget: PDF_AI_BUDGET }
     ),
     checkUrl(
       url,
@@ -91,7 +130,7 @@ export async function sampleArticleItems(url: string, language?: string): Promis
         en: 'Give author contribution, conflict of interest and funding/acknowledgement declarations at the end of the article, and ethics committee details (name, date, number) or a statement that approval was not required on the first or last page. (K 13, K 8.1)',
       },
       language,
-      { ref: 'K 13, K 8.1', keywords: [...KEYWORDS.sampleArticle], textFrom }
+      { ref: 'K 13, K 8.1', keywords: [...KEYWORDS.sampleArticle], textFrom, budget: PDF_AI_BUDGET }
     ),
   ]);
 
@@ -100,7 +139,7 @@ export async function sampleArticleItems(url: string, language?: string): Promis
   const declarationsItem: ReportItem =
     declarations.status === 'fail' && declarations.confidence ? { ...declarations, status: 'warning' } : declarations;
 
-  return { pdfTextCopyable: true, items: [article, declarationsItem] };
+  return { pdfTextCopyable: true, pdfSample: pdfTextSample(pages), items: [article, declarationsItem] };
 }
 
 async function htmlSampleItems(url: string, language: string | undefined, accessible: boolean): Promise<SampleArticleResult> {

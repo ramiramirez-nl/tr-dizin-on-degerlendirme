@@ -130,8 +130,13 @@ export interface CheckUrlOptions {
   ref?: string;
   /** Words that locate the relevant passages on a long page (see `selectPassages`). */
   keywords?: string[];
-  /** Build the text sent to the AI from the scrape (for example selected PDF pages). */
-  textFrom?: (scraped: ScrapeResult) => string;
+  /**
+   * Build the text sent to the AI from the scrape (for example selected PDF
+   * pages). Return `partial: true` when relevant text had to be left out.
+   */
+  textFrom?: (scraped: ScrapeResult) => string | { text: string; partial: boolean };
+  /** Characters of page text sent to the AI; defaults to the AI client's budget. */
+  budget?: number;
 }
 
 /** " Eksik görünenler: a; b." built from the AI's list of missing elements. */
@@ -193,15 +198,19 @@ export async function checkUrl(
       url,
     };
   }
+  const prepared = options.textFrom ? options.textFrom(scraped) : scraped.text;
+  const preparedText = typeof prepared === 'string' ? prepared : prepared.text;
+  const preparedPartial = typeof prepared !== 'string' && prepared.partial;
   const analysis = await analyzePageContent({
-    pageText: options.textFrom ? options.textFrom(scraped) : scraped.text,
+    pageText: preparedText,
+    budget: options.budget,
     pageMeta: scraped.meta,
     criteria: aiCriteria,
     keywords: options.keywords,
     url,
     language,
   });
-  const partial = inconclusive(analysis);
+  const partial = inconclusive({ ...analysis, partial: analysis.partial || preparedPartial });
   const status: CheckStatus = analysis.found ? 'pass' : analysis.skipped || partial ? 'warning' : 'fail';
   const rawMessage = analysis.found
     ? pick(language, {
