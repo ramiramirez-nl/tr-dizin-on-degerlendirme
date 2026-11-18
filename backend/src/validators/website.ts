@@ -1,6 +1,7 @@
 import type { ValidationContext, WebsiteData } from '../types/formData';
 import type { ReportItem } from '../types/report';
 import { checkUrl, declaration, pick } from './shared';
+import { KEYWORDS } from './keywords';
 
 const SECTION = 'Website';
 
@@ -20,7 +21,7 @@ export async function validateWebsite(
         en: 'Add a publicly accessible page that describes the journal’s aims and scope in detail. (ÖK 9)',
       },
       language,
-      { ref: 'ÖK 9' }
+      { ref: 'ÖK 9', keywords: [...KEYWORDS.aimsAndScope] }
     ),
     checkUrl(
       data.authorGuidelinesUrl,
@@ -32,7 +33,7 @@ export async function validateWebsite(
         en: 'Publish detailed author guidelines (manuscript format, tables/figures, headings, abstract, reference layout) and name the citation style used (APA, MLA, AIP, NLM, AMA, ACS, Chicago, ISNAD, etc.). (K 11, GH 9)',
       },
       language,
-      { ref: 'K 11, GH 9' }
+      { ref: 'K 11, GH 9', keywords: [...KEYWORDS.authorGuidelines] }
     ),
     checkUrl(
       data.publicationPolicyUrl,
@@ -44,7 +45,7 @@ export async function validateWebsite(
         en: 'Publish a publication policy page covering open access, the fee policy (or a statement that no fees are charged) and the review process/duration. (K 12)',
       },
       language,
-      { ref: 'K 12' }
+      { ref: 'K 12', keywords: [...KEYWORDS.publicationPolicy] }
     ),
   ]);
 

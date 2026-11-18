@@ -74,6 +74,22 @@ describe('scrapeUrl', () => {
     expect(result.meta).toContain('citation_language=tr');
   });
 
+  it('puts each block element on its own line', async () => {
+    vi.mocked(axios.get).mockResolvedValue(
+      htmlResponse(
+        '<html><body><div><h4>Yayın Etiği Bildirgesi</h4><div class="collapse"><p>Bildirge metni.</p></div></div>' +
+          '<div><h4>Editör ve Editör Kurulunun Sorumlulukları</h4></div><p>Satır<br>sonu</p></body></html>'
+      )
+    );
+    const result = await scrapeUrl('https://example.com/blocks');
+    const lines = result.text.split('\n');
+    expect(lines).toContain('Yayın Etiği Bildirgesi');
+    expect(lines).toContain('Editör ve Editör Kurulunun Sorumlulukları');
+    expect(lines).toContain('Bildirge metni.');
+    expect(result.text).not.toContain('BildirgesiEditör');
+    expect(lines).toContain('Satır');
+  });
+
   it('returns accessible false on HTTP error status', async () => {
     vi.mocked(axios.get).mockResolvedValue(htmlResponse('Not Found', 404));
     const result = await scrapeUrl('https://example.com/missing');

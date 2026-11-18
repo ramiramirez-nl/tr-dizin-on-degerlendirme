@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createHash } from 'crypto';
 import { withRetry } from '../utils/retry';
 import { TtlCache } from '../utils/ttlCache';
+import { selectPassages } from '../scraper/passages';
 
 /**
  * AI client. OpenAI-compatible REST API.
@@ -21,14 +22,16 @@ const BASE_URL = process.env.OPENAI_BASE_URL ?? 'https://api.freemodel.dev/v1';
 const MODEL = process.env.AI_MODEL ?? 'gpt-4o-mini';
 const API_KEY = process.env.OPENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '';
 
-/** Characters of page text sent to the model. */
-const PAGE_TEXT_LIMIT = 3000;
+/** Characters of page text sent to the model, chosen by `selectPassages()`. */
+const PAGE_TEXT_BUDGET = 4000;
 
 export interface AnalysisInput {
   pageText: string;
   /** Declared language metadata from the page head (html lang, hreflang, ...). */
   pageMeta?: string;
   criteria: string;
+  /** Words that mark the passages this check needs; used to pick parts of long pages. */
+  keywords?: string[];
   url: string;
   language?: string;
 }
@@ -40,6 +43,11 @@ export interface AnalysisResult {
   issues: string[];
   /** True when the AI check could not run (no API key / service error). */
   skipped?: boolean;
+  /**
+   * True when the page was longer than the budget and matching passages were
+   * left out, so a "not found" verdict is not conclusive.
+   */
+  partial?: boolean;
 }
 
 const normalizeForQuote = (s: string): string => s.replace(/\s+/g, ' ').trim().toLocaleLowerCase('tr');
@@ -98,8 +106,15 @@ export async function analyzePageContent(
     };
   }
 
+  const selection = selectPassages(input.pageText, input.keywords, PAGE_TEXT_BUDGET);
+  const excerpt = selection.text;
+  const excerptNote =
+    excerpt.length < input.pageText.length
+      ? `selected passages from a ${input.pageText.length}-character page; "[...]" marks omitted parts, and navigation or menu lines may appear`
+      : 'the whole page; navigation and menu lines may appear';
+
   const cacheKey = createHash('sha256')
-    .update([MODEL, input.language ?? '', input.criteria, input.pageMeta ?? '', input.pageText.slice(0, PAGE_TEXT_LIMIT)].join('|'))
+    .update([MODEL, input.language ?? '', input.criteria, input.pageMeta ?? '', excerpt].join('|'))
     .digest('hex');
   const cached = analysisCache.get(cacheKey);
   if (cached) return cached;
@@ -115,17 +130,17 @@ Analyze the following webpage content and check if it meets this criterion:
 CRITERION: ${input.criteria}
 URL: ${input.url}
 ${langInstruction}
-${input.pageMeta ? `PAGE LANGUAGE METADATA (hints only; html lang and hreflang describe the website interface, not necessarily the journal's publication language): ${input.pageMeta}\n` : ''}PAGE CONTENT (first ${PAGE_TEXT_LIMIT} chars; navigation and menu text are included and the page may be cut off):
-${input.pageText.slice(0, PAGE_TEXT_LIMIT)}
+${input.pageMeta ? `PAGE LANGUAGE METADATA (hints only; html lang and hreflang describe the website interface, not necessarily the journal's publication language): ${input.pageMeta}\n` : ''}PAGE CONTENT (${excerptNote}):
+${excerpt}
 
-If you cannot find the requirement, say it was not found in the provided excerpt. Do not claim the whole page lacks it.
+The criterion may list several required elements. Check each one separately. "found" is true only when all of them are present. In "issues", name each required element you could not find, one short phrase per element, and nothing else. If you cannot find something, say it was not found in the provided content. Do not claim the whole page lacks it.
 
 Respond ONLY with valid JSON in this exact format, no markdown fences:
 {
   "found": true/false,
   "confidence": "high"/"medium"/"low",
   "evidence": "A short verbatim quote, copied character for character from the page content, that supports your verdict. Use an empty string when there is no such quote (for example when the requirement is missing). Never paraphrase and never describe.",
-  "issues": ["List of specific problems if any, empty array if none"]
+  "issues": ["Each required element that is missing, as a short phrase; empty array if none"]
 }`;
 
   try {
@@ -183,7 +198,8 @@ Respond ONLY with valid JSON in this exact format, no markdown fences:
     }
     const result: AnalysisResult = {
       ...parsed,
-      evidence: verbatimQuote(parsed.evidence, input.pageText.slice(0, PAGE_TEXT_LIMIT)),
+      evidence: verbatimQuote(parsed.evidence, excerpt),
+      ...(selection.partial ? { partial: true } : {}),
     };
     analysisCache.set(cacheKey, result);
     return result;

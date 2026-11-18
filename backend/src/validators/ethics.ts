@@ -1,6 +1,7 @@
 import type { EthicsData, ValidationContext } from '../types/formData';
 import type { ReportItem } from '../types/report';
 import { checkUrl, declaration } from './shared';
+import { KEYWORDS } from './keywords';
 
 const SECTION = 'Ethics';
 
@@ -19,7 +20,7 @@ export async function validateEthics(
       en: 'Publish the ethics principles under a separate heading with separate sections for authors, reviewers and editors, refer to COPE and/or ICMJE, and state that articles comply with research and publication ethics. (K 8.3, K 8.4, K 8.5)',
     },
     language,
-    { ref: 'K 8.3, K 8.4, K 8.5' }
+    { ref: 'K 8.3, K 8.4, K 8.5', keywords: [...KEYWORDS.ethics] }
   );
 
   const consentSevere =

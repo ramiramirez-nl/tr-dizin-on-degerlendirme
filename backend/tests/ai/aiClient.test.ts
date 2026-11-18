@@ -75,6 +75,14 @@ describe('analyzePageContent', () => {
     expect(result.evidence).toBe('');
   });
 
+  it('sends the passage that matches the keywords from deep inside a long page', async () => {
+    const page = Array.from({ length: 150 }, (_v, i) => `Genel bilgi satırı ${i} burada yer alır ve konuyla ilgisizdir.`).join('\n') +
+      '\nÇalışmalar en az iki hakemin değerlendirmesine sunulur.';
+    await analyzePageContent({ pageText: page, criteria: 'deep-passage', keywords: ['hakem'], url: 'https://example.com' });
+    const prompt = vi.mocked(axios.post).mock.calls[0][1] as { messages: { content: string }[] };
+    expect(prompt.messages[0].content).toContain('en az iki hakemin değerlendirmesine sunulur');
+  });
+
   it('returns structured JSON response', async () => {
     const result = await analyzePageContent({
       pageText: 'Some page content',

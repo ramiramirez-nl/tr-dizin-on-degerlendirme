@@ -4,7 +4,7 @@ import { lookupIssn } from '../issn/issnClient';
 import { analyzePageContent } from '../ai/aiClient';
 import type { IdentityData, ValidationContext } from '../types/formData';
 import type { ReportItem } from '../types/report';
-import { describeAccessFailure, pick, withRef } from './shared';
+import { describeAccessFailure, inconclusive, pick, withRef } from './shared';
 import { HOMEPAGE_CHECKS } from './homepageChecks';
 
 const SECTION = 'Identity';
@@ -70,6 +70,7 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
         pageText: scraped.text,
         pageMeta: scraped.meta,
         criteria: check.criteria,
+        keywords: check.keywords,
         url,
         language,
       });
@@ -103,6 +104,24 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
             en: `Verify the page content manually. ${check.suggestion.en}`,
           }),
           url,
+        };
+      }
+      if (inconclusive(analysis)) {
+        return {
+          section: SECTION,
+          field: check.field,
+          status: 'warning',
+          message: withRef(
+            pick(language, {
+              tr: 'Ana sayfanın okunan bölümlerinde bu bilgi bulunamadı. Sayfa uzun olduğu için tamamı incelenemedi.',
+              en: 'This information was not found in the parts of the homepage that were read. The page is long and could not be read in full.',
+            }),
+            check.ref,
+            language
+          ),
+          suggestion: pick(language, check.suggestion),
+          url,
+          confidence: 'low',
         };
       }
       return {

@@ -1,6 +1,7 @@
 import type { ArticleFormatData, ValidationContext } from '../types/formData';
 import type { ReportItem } from '../types/report';
 import { checkUrl, declaration, pick } from './shared';
+import { KEYWORDS } from './keywords';
 
 const SECTION = 'Article Format';
 
@@ -245,7 +246,7 @@ export async function validateArticleFormat(
       en: 'Make sure the sample article shows the abstract and keywords, article type, submission/acceptance dates, author affiliations, ORCID iDs, a Latin-script reference list and a citation line. (ÖK 10–13, GH 8, GH 11)',
     },
     language,
-    { ref: 'ÖK 10–13, GH 8, GH 11' }
+    { ref: 'ÖK 10–13, GH 8, GH 11', keywords: [...KEYWORDS.sampleArticle] }
   );
 
   const results: ReportItem[] = [sample];

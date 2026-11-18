@@ -114,6 +114,13 @@ describe('validateIdentity', () => {
     expect(item.evidence).toBeUndefined();
   });
 
+  it('warns instead of failing a homepage check that read the page only in part', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: [], partial: true });
+    const item = byField(await run(base), 'publicationLanguageStated');
+    expect(item.status).toBe('warning');
+    expect(item.message).toContain('okunan bölümlerinde');
+  });
+
   it('warns on all AI checks when AI is skipped', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'low', evidence: 'skipped', issues: [], skipped: true });
     const items = await run(base);

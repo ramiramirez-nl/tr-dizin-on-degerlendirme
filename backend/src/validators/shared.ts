@@ -123,6 +123,23 @@ export interface CheckUrlOptions {
   required?: boolean;
   /** Criterion reference appended to every message, e.g. `K 15` or `ÖK 9`. */
   ref?: string;
+  /** Words that locate the relevant passages on a long page (see `selectPassages`). */
+  keywords?: string[];
+}
+
+/** " Eksik görünenler: a; b." built from the AI's list of missing elements. */
+export function missingList(issues: string[] | undefined, language?: string): string {
+  const items = (issues ?? [])
+    .map((i) => i.replace(/\s+/g, ' ').trim().replace(/[.;]+$/, ''))
+    .filter((i) => i && i.length <= 160)
+    .slice(0, 4);
+  if (items.length === 0) return '';
+  return pick(language, { tr: ` Eksik görünenler: ${items.join('; ')}.`, en: ` Apparently missing: ${items.join('; ')}.` });
+}
+
+/** A "not found" on a page the AI saw only in part is a warning, never a fail. */
+export function inconclusive(analysis: { found: boolean; skipped?: boolean; partial?: boolean }): boolean {
+  return !analysis.found && !analysis.skipped && analysis.partial === true;
 }
 
 /**
@@ -173,10 +190,12 @@ export async function checkUrl(
     pageText: scraped.text,
     pageMeta: scraped.meta,
     criteria: aiCriteria,
+    keywords: options.keywords,
     url,
     language,
   });
-  const status: CheckStatus = analysis.found ? 'pass' : analysis.skipped ? 'warning' : 'fail';
+  const partial = inconclusive(analysis);
+  const status: CheckStatus = analysis.found ? 'pass' : analysis.skipped || partial ? 'warning' : 'fail';
   const rawMessage = analysis.found
     ? pick(language, {
         tr: `Gerekli içerik ${url} adresinde bulundu.`,
@@ -187,10 +206,15 @@ export async function checkUrl(
           tr: `Sayfa erişilebilir, ancak içeriğin yapay zeka ile doğrulanması çalıştırılamadı. ${analysis.evidence}`,
           en: `The page is accessible, but AI verification of its content could not run. ${analysis.evidence}`,
         })
-      : pick(language, {
-          tr: 'Gerekli içerik bulunamadı.',
-          en: 'Required content not found.',
-        });
+      : partial
+        ? pick(language, {
+            tr: 'Gerekli içerik sayfanın okunan bölümlerinde bulunamadı. Sayfa uzun olduğu için tamamı incelenemedi.',
+            en: 'Required content was not found in the parts of the page that were read. The page is long and could not be read in full.',
+          }) + missingList(analysis.issues, language)
+        : pick(language, {
+            tr: 'Gerekli içerik bulunamadı.',
+            en: 'Required content not found.',
+          }) + missingList(analysis.issues, language);
   const message = withRef(rawMessage, options.ref, language);
   const suggestion = analysis.found
     ? ''
@@ -199,7 +223,12 @@ export async function checkUrl(
           tr: `Sayfa içeriğini elle doğrulayın. ${failSuggestion.tr}`,
           en: `Verify the page content manually. ${failSuggestion.en}`,
         })
-      : pick(language, failSuggestion);
+      : partial
+        ? pick(language, {
+            tr: `İçeriğin sayfada olduğundan eminseniz bu maddeyi elle doğrulayın. ${failSuggestion.tr}`,
+            en: `If you are sure the content is on the page, verify this item manually. ${failSuggestion.en}`,
+          })
+        : pick(language, failSuggestion);
   return {
     section,
     field,
@@ -207,7 +236,7 @@ export async function checkUrl(
     message,
     suggestion,
     url,
-    confidence: analysis.skipped ? undefined : analysis.confidence,
+    confidence: analysis.skipped ? undefined : partial ? 'low' : analysis.confidence,
     evidence: analysis.skipped ? undefined : analysis.evidence || undefined,
   };
 }

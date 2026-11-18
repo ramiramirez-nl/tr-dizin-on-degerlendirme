@@ -1,6 +1,7 @@
 import type { EditorialBoardsData, ValidationContext } from '../types/formData';
 import type { ReportItem } from '../types/report';
 import { checkUrl, declaration } from './shared';
+import { KEYWORDS } from './keywords';
 
 const SECTION = 'Editorial Boards';
 
@@ -19,7 +20,7 @@ export async function validateEditorialBoards(
       en: 'Publish a page listing the editorial board members with their institutions (at least city and country). (K 4)',
     },
     language,
-    { ref: 'K 4' }
+    { ref: 'K 4', keywords: [...KEYWORDS.editorialBoard] }
   );
 
   return [

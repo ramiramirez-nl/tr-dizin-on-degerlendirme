@@ -16,6 +16,28 @@ export interface ScrapeResult {
   meta?: string;
 }
 
+const BLOCK_ELEMENTS =
+  'p, div, section, article, header, footer, nav, aside, main, h1, h2, h3, h4, h5, h6, ' +
+  'li, dt, dd, tr, td, th, table, ul, ol, blockquote, pre, figure, figcaption, form, button';
+
+/**
+ * Body text with one line per block element. Without the line breaks,
+ * adjacent headings run together ("Yayın Etiği BildirgesiEditör ...") and the
+ * passage selector cannot tell sections apart.
+ */
+function blockText($: cheerio.CheerioAPI): string {
+  $('br').replaceWith('\n');
+  $(BLOCK_ELEMENTS).each((_i, el) => {
+    $(el).prepend('\n').append('\n');
+  });
+  return $('body')
+    .text()
+    .split('\n')
+    .map((line) => line.replace(/[^\S\n]+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
 /** Collect language hints that are invisible in the body text. */
 function extractLanguageMeta($: cheerio.CheerioAPI): string {
   const parts: string[] = [];
@@ -154,7 +176,7 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
     // Keep nav/footer/header: journal metadata (publication language, ISSN,
     // publisher) often sits in menus and sidebars on DergiPark-style sites.
     $('script, style, noscript, iframe').remove();
-    const text = $('body').text().replace(/\s+/g, ' ').trim();
+    const text = blockText($);
 
     const links: string[] = [];
     $('a[href]').each((_i, el) => {

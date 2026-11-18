@@ -1,6 +1,7 @@
 import type { PeerReviewData, ValidationContext } from '../types/formData';
 import type { ReportItem } from '../types/report';
 import { checkUrl, declaration } from './shared';
+import { KEYWORDS } from './keywords';
 
 const SECTION = 'Peer Review';
 
@@ -19,7 +20,7 @@ export async function validatePeerReview(
       en: 'Publish a page describing the peer review process (at least two reviewers, type of blinding, review steps). (K 15)',
     },
     language,
-    { ref: 'K 15' }
+    { ref: 'K 15', keywords: [...KEYWORDS.peerReview] }
   );
 
   const results: ReportItem[] = [
@@ -173,7 +174,7 @@ export async function validatePeerReview(
         en: 'Describe the peer review process step by step, from submission to decision, including timing and how reviewer opinions are used. (K 15)',
       },
       language,
-      { ref: 'K 15' }
+      { ref: 'K 15', keywords: [...KEYWORDS.peerReviewDetail] }
     );
     results.push(detail.status === 'fail' ? { ...detail, status: 'warning' } : detail);
   }
@@ -190,7 +191,7 @@ export async function validatePeerReview(
           en: 'Publish a page explaining how plagiarism is screened (software, similarity threshold, actions taken). (T 3)',
         },
         language,
-        { required: false, ref: 'T 3' }
+        { required: false, ref: 'T 3', keywords: [...KEYWORDS.plagiarism] }
       )
     );
   }

@@ -61,6 +61,27 @@ describe('validateWebsite', () => {
     expect(byField(items, 'authorGuidelinesUrl').status).toBe('fail');
   });
 
+  it('names the missing elements in the fail message', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: ['ücret politikası', 'değerlendirme süresi'] });
+    const item = byField(await run(good), 'publicationPolicyUrl');
+    expect(item.status).toBe('fail');
+    expect(item.message).toContain('Eksik görünenler: ücret politikası; değerlendirme süresi.');
+  });
+
+  it('warns instead of failing when the page was only read in part', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: [], partial: true });
+    const item = byField(await run(good), 'publicationPolicyUrl') as Item & { confidence?: string };
+    expect(item.status).toBe('warning');
+    expect(item.confidence).toBe('low');
+    expect(item.message).toContain('okunan bölümlerinde bulunamadı');
+  });
+
+  it('passes the check keywords to the AI client', async () => {
+    await run(good);
+    const call = ai.mock.calls.find((c) => (c[0].criteria as string).includes('peer review') || (c[0].criteria as string).includes('open access'));
+    expect(call?.[0].keywords).toContain('açık erişim');
+  });
+
   it('fails when the AI does not find the content', async () => {
     ai.mockResolvedValue({ found: false, confidence: 'high', evidence: 'yok', issues: [] });
     const items = await run(good);

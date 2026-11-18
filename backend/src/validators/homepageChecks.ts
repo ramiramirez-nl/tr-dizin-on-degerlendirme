@@ -9,11 +9,14 @@ export interface HomepageCheck {
   unverified: Bilingual;
   /** Criterion reference appended to this check's messages, e.g. `ÖK 6`. */
   ref: string;
+  /** Words that locate the relevant passages on a long homepage. */
+  keywords: string[];
 }
 
 export const HOMEPAGE_CHECKS: HomepageCheck[] = [
   {
     field: 'issnOnHomepage',
+    keywords: ['issn', 'e-issn', 'p-issn'],
     ref: 'ÖK 6',
     criteria:
       'Is an ISSN and/or e-ISSN number visibly displayed on this page (for example "ISSN: 1234-5678" or "e-ISSN: 1234-5678" in the header, footer or journal information box)? The page may be in Turkish or English.',
@@ -36,6 +39,7 @@ export const HOMEPAGE_CHECKS: HomepageCheck[] = [
   },
   {
     field: 'peerReviewedStatement',
+    keywords: ['hakemli', 'hakem', 'bilimsel', 'peer', 'refereed', 'reviewed', 'scholarly'],
     ref: 'ÖK 7',
     criteria:
       'Does the page state that the journal is a peer-reviewed (hakemli) scientific journal, for example "hakemli bilimsel dergi", "çift kör hakemlik" or "peer-reviewed scholarly journal"? The page may be in Turkish or English.',
@@ -58,6 +62,7 @@ export const HOMEPAGE_CHECKS: HomepageCheck[] = [
   },
   {
     field: 'publicationLanguageStated',
+    keywords: ['yayın dili', 'dil', 'diller', 'language', 'languages', 'türkçe', 'ingilizce', 'turkish', 'english'],
     ref: 'ÖK 8',
     criteria:
       'Does the page state the journal\'s publication language(s), meaning the language(s) in which articles are published (for example "Yayın dili: Türkçe, İngilizce", "Yayın Dili", "Dil: Türkçe", "Languages: Turkish, English" or "Publication language: English")? A website interface language switcher (such as TR/EN buttons) or an html lang attribute alone does NOT count. The page may be in Turkish or English.',
@@ -80,6 +85,7 @@ export const HOMEPAGE_CHECKS: HomepageCheck[] = [
   },
   {
     field: 'ethicsOnHomepage',
+    keywords: ['etik', 'ethics', 'ethical', 'yayın etiği'],
     ref: 'K 8.3',
     criteria:
       'Does the page, including its menus and links, show a separate heading, menu item or link for the journal\'s publication ethics principles (for example "Etik İlkeler", "Yayın Etiği", "Etik İlkeler ve Yayın Politikası" or "Publication Ethics")? The page may be in Turkish or English.',
