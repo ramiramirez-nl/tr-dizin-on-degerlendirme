@@ -263,6 +263,8 @@ Keep files under 400 lines. Current structure:
 - Unit tests for each validator (AI client and scraper mocked), the utilities (`retry.ts`, `ttlCache.ts`) and the SSRF allow and block list
 - Integration tests for `/api/assess`, covering both the plain JSON and SSE response paths (Supertest)
 - `frontend/src/i18n/keys.test.ts` guards translation key parity between `en` and `tr`
+- Regression fixtures: raw pages of journals whose reports were disputed live in `backend/tests/fixtures/dergipark/` (see its README). `backend/tests/fixtures.test.ts` checks, without AI, that the passages sent to the AI still contain the proving sentences. Cases whose file is missing are skipped
+- Live golden set: `cd backend && npm run eval:live` runs the real validators (real scraping and AI) on the cases in `backend/eval/*.json` and compares verdicts. It costs AI calls and needs network access to the journal sites, so it runs by hand before changes to the scraper, passage selection or AI prompts, not in CI
 - E2E tests are not implemented yet (Playwright would be the natural choice)
 - `npm run typecheck && npm test` in both `backend/` and `frontend/`. CI runs both on push and pull request (`.github/workflows/ci.yml`).
 

@@ -146,6 +146,24 @@ export function clearScrapeCache(): void {
   scrapeCache.clear();
 }
 
+/** Text, outbound links and language metadata of an HTML page, as the AI checks see them. */
+export function parseHtml(html: string, pageUrl: string): { text: string; links: string[]; meta: string } {
+  const $ = cheerio.load(html);
+  const meta = extractLanguageMeta($);
+  // Keep nav/footer/header: journal metadata (publication language, ISSN,
+  // publisher) often sits in menus and sidebars on DergiPark-style sites.
+  $('script, style, noscript, iframe').remove();
+  annotateExternalLinks($, pageUrl);
+  const text = blockText($);
+
+  const links: string[] = [];
+  $('a[href]').each((_i, el) => {
+    const href = $(el).attr('href') ?? '';
+    if (href.startsWith('http')) links.push(href);
+  });
+  return { text, links, meta };
+}
+
 export async function scrapeUrl(url: string): Promise<ScrapeResult> {
   let safeUrl: string;
   try {
@@ -204,20 +222,7 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
 
     const html = bytes.toString('utf8');
 
-    const $ = cheerio.load(html);
-    const meta = extractLanguageMeta($);
-    // Keep nav/footer/header: journal metadata (publication language, ISSN,
-    // publisher) often sits in menus and sidebars on DergiPark-style sites.
-    $('script, style, noscript, iframe').remove();
-    annotateExternalLinks($, safeUrl);
-    const text = blockText($);
-
-    const links: string[] = [];
-    $('a[href]').each((_i, el) => {
-      const href = $(el).attr('href') ?? '';
-      if (href.startsWith('http')) links.push(href);
-    });
-
+    const { text, links, meta } = parseHtml(html, safeUrl);
     const result: ScrapeResult = { accessible: true, text, links, statusCode, ...(meta ? { meta } : {}) };
     scrapeCache.set(safeUrl, result);
     return result;

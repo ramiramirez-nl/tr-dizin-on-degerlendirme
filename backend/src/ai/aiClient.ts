@@ -23,7 +23,7 @@ const MODEL = process.env.AI_MODEL ?? 'gpt-4o-mini';
 const API_KEY = process.env.OPENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '';
 
 /** Characters of page text sent to the model, chosen by `selectPassages()`. */
-const PAGE_TEXT_BUDGET = 4000;
+export const PAGE_TEXT_BUDGET = 4000;
 
 export interface AnalysisInput {
   pageText: string;

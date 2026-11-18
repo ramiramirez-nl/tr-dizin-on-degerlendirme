@@ -1,0 +1,44 @@
+[
+  {
+    "name": "AKÜ author guide: review process reaches the peer review check",
+    "file": "akuiibfd-author-guide.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
+    "keywords": "peerReview",
+    "mustContain": ["Çalışmanın Değerlendirilmesi", "hakem"]
+  },
+  {
+    "name": "AKÜ author guide: citation style link reaches the guidelines check",
+    "file": "akuiibfd-author-guide.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
+    "keywords": "authorGuidelines",
+    "mustContain": ["Atıf Sistemi", "atıf gösterme biçimine"]
+  },
+  {
+    "name": "AKÜ policy page: COPE and every role section reach the ethics check",
+    "file": "akuiibfd-policy.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd/policy",
+    "keywords": "ethics",
+    "mustContain": ["COPE", "Editör ve Editör Kurulunun Sorumlulukları", "Hakemlerin Sorumlulukları", "Yazarların Sorumlulukları"]
+  },
+  {
+    "name": "AKÜ policy page: the publication policy section reaches the policy check",
+    "file": "akuiibfd-policy.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd/policy",
+    "keywords": "publicationPolicy",
+    "mustContain": ["Yayın Politikası"]
+  },
+  {
+    "name": "AKÜ homepage: ISSN reaches the ISSN check",
+    "file": "akuiibfd-home.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd",
+    "keywords": "homepageIssn",
+    "mustContain": ["2651-4117"]
+  },
+  {
+    "name": "AKÜ article PDF: first page and references reach the sample article check",
+    "file": "akuiibfd-article.pdf",
+    "url": "https://dergipark.org.tr/tr/download/article-file/1921151",
+    "keywords": "sampleArticle",
+    "mustContain": ["İLK SAYFA", "KAYNAKÇA BAŞLANGICI"]
+  }
+]
