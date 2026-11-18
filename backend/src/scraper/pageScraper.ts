@@ -38,6 +38,24 @@ function blockText($: cheerio.CheerioAPI): string {
     .join('\n');
 }
 
+/**
+ * Append the address to links that leave the site, so "buradan" pointing to
+ * apastyle.apa.org still tells the AI which citation style is meant.
+ */
+function annotateExternalLinks($: cheerio.CheerioAPI, pageUrl: string): void {
+  const host = new URL(pageUrl).hostname;
+  $('a[href]').each((_i, el) => {
+    const href = $(el).attr('href') ?? '';
+    if (!/^https?:\/\//i.test(href)) return;
+    try {
+      if (new URL(href).hostname === host) return;
+    } catch {
+      return;
+    }
+    if (!$(el).text().includes(href)) $(el).append(` (${href})`);
+  });
+}
+
 /** Collect language hints that are invisible in the body text. */
 function extractLanguageMeta($: cheerio.CheerioAPI): string {
   const parts: string[] = [];
@@ -176,6 +194,7 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
     // Keep nav/footer/header: journal metadata (publication language, ISSN,
     // publisher) often sits in menus and sidebars on DergiPark-style sites.
     $('script, style, noscript, iframe').remove();
+    annotateExternalLinks($, safeUrl);
     const text = blockText($);
 
     const links: string[] = [];

@@ -34,6 +34,7 @@ export async function runAllValidations(
   const context: ValidationContext = {
     subjectArea: formData.identity.subjectArea,
     issuesPerYear: formData.identity.issuesPerYear,
+    referenceStyle: formData.articleFormat?.referenceStyle ?? '',
   };
   const validators: Array<Promise<ReportItem[]>> = [
     validateIdentity(formData.identity, language, context),

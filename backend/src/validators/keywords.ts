@@ -11,9 +11,10 @@ export const KEYWORDS = {
     'isnad', 'özet', 'tablo', 'şekil', 'kelime', 'guideline', 'template', 'citation', 'reference', 'abstract',
   ],
   publicationPolicy: [
-    'yayın politika', 'açık erişim', 'open access', 'lisans', 'license', 'creative commons', 'cc by', 'ücret',
-    'fee', 'süre', 'değerlendirme süreci', 'publication policy',
+    'yayın politika', 'açık erişim', 'open access', 'lisans', 'license', 'creative commons', 'cc by', 'süre',
+    'değerlendirme süreci', 'hakem', 'publication policy', 'review',
   ],
+  feePolicy: ['ücret', 'ücretsiz', 'fee', 'fees', 'charge', 'apc', 'ödeme', 'masraf', 'free of charge', 'payment'],
   editorialBoard: ['editör', 'kurul', 'üniversite', 'university', 'board', 'editor', 'prof', 'doç', 'dr'],
   peerReview: [
     'hakem', 'değerlendir', 'kör', 'blind', 'review', 'referee', 'iki', 'two', 'çift', 'double',

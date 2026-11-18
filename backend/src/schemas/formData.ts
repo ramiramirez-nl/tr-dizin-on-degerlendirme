@@ -34,6 +34,7 @@ const websiteSchema = z.object({
   aimsAndScopeUrl: urlField,
   authorGuidelinesUrl: urlField,
   publicationPolicyUrl: urlField,
+  feePolicyUrl: urlField,
   journalInfoComplete: triStateBool,
   nameChanged: triStateBool,
   hasJournalHistory: triStateBool,

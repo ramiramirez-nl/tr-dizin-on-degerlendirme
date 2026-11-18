@@ -73,6 +73,7 @@ export function StepReview() {
           <Row label={t('step.review.aimsAndScopeUrl')} value={data.website?.aimsAndScopeUrl} />
           <Row label={t('step.review.authorGuidelinesUrl')} value={data.website?.authorGuidelinesUrl} />
           <Row label={t('step.review.publicationPolicyUrl')} value={data.website?.publicationPolicyUrl} />
+          <Row label={t('step.review.feePolicyUrl')} value={data.website?.feePolicyUrl} />
           {declarations(data.website)}
         </dl>
         <h3 className="mb-2 mt-4 font-semibold">{t('steps.editorialBoards')}</h3>

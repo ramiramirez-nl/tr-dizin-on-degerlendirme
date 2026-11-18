@@ -7,7 +7,7 @@ import { scrapeUrl } from '../../src/scraper/pageScraper';
 import { analyzePageContent } from '../../src/ai/aiClient';
 
 import { validateWebsite } from '../../src/validators/website';
-import type { WebsiteData } from '../../src/types/formData';
+import type { ValidationContext, WebsiteData } from '../../src/types/formData';
 
 const scrape = scrapeUrl as unknown as ReturnType<typeof vi.fn>;
 const ai = analyzePageContent as unknown as ReturnType<typeof vi.fn>;
@@ -25,13 +25,14 @@ const good: WebsiteData = {
   aimsAndScopeUrl: 'https://example.com/aims',
   authorGuidelinesUrl: 'https://example.com/guidelines',
   publicationPolicyUrl: 'https://example.com/policy',
+  feePolicyUrl: '',
   journalInfoComplete: true,
   nameChanged: false,
   hasJournalHistory: false,
   indexingClaimsAccurate: true,
   abbreviationShown: true,
 };
-const run = (d: WebsiteData, lang?: string) => validateWebsite(d, lang) as Promise<Item[]>;
+const run = (d: WebsiteData, lang?: string, ctx?: ValidationContext) => validateWebsite(d, lang, ctx) as Promise<Item[]>;
 
 describe('validateWebsite', () => {
   it('passes everything on the happy path', async () => {
@@ -41,6 +42,7 @@ describe('validateWebsite', () => {
       'aimsAndScopeUrl',
       'authorGuidelinesUrl',
       'publicationPolicyUrl',
+      'feePolicyUrl',
       'journalInfoComplete',
       'hasJournalHistory',
       'indexingClaimsAccurate',
@@ -80,6 +82,33 @@ describe('validateWebsite', () => {
     await run(good);
     const call = ai.mock.calls.find((c) => (c[0].criteria as string).includes('peer review') || (c[0].criteria as string).includes('open access'));
     expect(call?.[0].keywords).toContain('açık erişim');
+  });
+
+  it('looks for the fee policy on the publication policy page when no fee page is given', async () => {
+    await run(good);
+    const call = ai.mock.calls.find((c) => (c[0].criteria as string).includes('fee policy'));
+    expect(call?.[0].url).toBe('https://example.com/policy');
+  });
+
+  it('accepts a separate fee page and recommends linking it from the publication policy', async () => {
+    const item = byField(await run({ ...good, feePolicyUrl: 'https://example.com/fee' }), 'feePolicyUrl');
+    expect(item.status).toBe('pass');
+    expect(item.message).toContain('ayrı bir sayfada bulundu');
+    const call = ai.mock.calls.find((c) => (c[0].criteria as string).includes('fee policy'));
+    expect(call?.[0].url).toBe('https://example.com/fee');
+  });
+
+  it('reports missing author guidelines content as a warning, not a fail', async () => {
+    ai.mockResolvedValue({ found: false, confidence: 'medium', evidence: '', issues: [] });
+    expect(byField(await run(good), 'authorGuidelinesUrl').status).toBe('warning');
+    expect(byField(await run(good), 'publicationPolicyUrl').status).toBe('fail');
+  });
+
+  it('tells the AI which citation style the editor declared', async () => {
+    const ctx: ValidationContext = { subjectArea: 'social_humanities', issuesPerYear: 2, referenceStyle: 'APA' };
+    await run(good, 'tr', ctx);
+    const call = ai.mock.calls.find((c) => (c[0].criteria as string).includes('citation style'));
+    expect(call?.[0].criteria).toContain('declared the citation style as APA');
   });
 
   it('fails when the AI does not find the content', async () => {

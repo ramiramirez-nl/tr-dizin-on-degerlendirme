@@ -57,6 +57,7 @@ const DEFAULT_VALUES: FormData = {
     aimsAndScopeUrl: '',
     authorGuidelinesUrl: '',
     publicationPolicyUrl: '',
+    feePolicyUrl: '',
     journalInfoComplete: false,
     nameChanged: false,
     hasJournalHistory: false,

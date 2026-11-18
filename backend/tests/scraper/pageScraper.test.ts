@@ -90,6 +90,18 @@ describe('scrapeUrl', () => {
     expect(lines).toContain('Satır');
   });
 
+  it('adds the address of links that leave the site', async () => {
+    vi.mocked(axios.get).mockResolvedValue(
+      htmlResponse(
+        '<html><body><p>Atıf gösterme biçimine <a href="https://apastyle.apa.org/">buradan</a> ulaşabilirsiniz.</p>' +
+          '<a href="https://example.com/internal">İç bağlantı</a></body></html>'
+      )
+    );
+    const result = await scrapeUrl('https://example.com/guide');
+    expect(result.text).toContain('buradan (https://apastyle.apa.org/)');
+    expect(result.text).not.toContain('(https://example.com/internal)');
+  });
+
   it('returns accessible false on HTTP error status', async () => {
     vi.mocked(axios.get).mockResolvedValue(htmlResponse('Not Found', 404));
     const result = await scrapeUrl('https://example.com/missing');

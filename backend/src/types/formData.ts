@@ -35,6 +35,7 @@ export interface WebsiteData {
   aimsAndScopeUrl: string; // ÖK9
   authorGuidelinesUrl: string; // K11, GH9
   publicationPolicyUrl: string; // K12
+  feePolicyUrl: string; // K12, optional separate fee page (DergiPark "Ücret Politikası")
   journalInfoComplete: boolean; // ÖK8
   nameChanged: boolean; // GH2
   hasJournalHistory: boolean; // GH2
@@ -123,4 +124,6 @@ export interface FormData {
 export interface ValidationContext {
   subjectArea: SubjectArea | '';
   issuesPerYear: number;
+  /** Citation style declared in the article format step, used as context for the author guidelines check. */
+  referenceStyle?: string;
 }

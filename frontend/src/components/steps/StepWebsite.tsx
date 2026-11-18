@@ -36,6 +36,12 @@ export function StepWebsite() {
         error={errors.website?.publicationPolicyUrl?.message}
         {...register('website.publicationPolicyUrl', urlRules)}
       />
+      <LinkField
+        label={t('step.website.feePolicyUrl')}
+        hint={t('step.website.feePolicyUrlHint')}
+        error={errors.website?.feePolicyUrl?.message}
+        {...register('website.feePolicyUrl', { pattern: { value: URL_PATTERN, message: t('validation.url') } })}
+      />
       <CheckboxField name="website.journalInfoComplete" />
       <CheckboxField name="website.nameChanged" />
       {nameChanged && <CheckboxField name="website.hasJournalHistory" />}

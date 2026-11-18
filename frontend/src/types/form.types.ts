@@ -29,6 +29,7 @@ export interface WebsiteData {
   aimsAndScopeUrl: string; // ÖK9
   authorGuidelinesUrl: string; // K11, GH9
   publicationPolicyUrl: string; // K12
+  feePolicyUrl: string; // K12, optional
   journalInfoComplete: boolean; // ÖK8
   nameChanged: boolean; // GH2
   hasJournalHistory: boolean; // GH2

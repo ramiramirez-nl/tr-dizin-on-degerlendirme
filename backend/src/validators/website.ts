@@ -8,9 +8,10 @@ const SECTION = 'Website';
 export async function validateWebsite(
   data: WebsiteData,
   language?: string,
-  _context?: ValidationContext
+  context?: ValidationContext
 ): Promise<ReportItem[]> {
-  const [aims, guidelines, policy] = await Promise.all([
+  const declaredStyle = context?.referenceStyle && context.referenceStyle !== 'Other' ? context.referenceStyle : '';
+  const [aims, guidelines, policy, fee] = await Promise.all([
     checkUrl(
       data.aimsAndScopeUrl,
       SECTION,
@@ -27,7 +28,7 @@ export async function validateWebsite(
       data.authorGuidelinesUrl,
       SECTION,
       'authorGuidelinesUrl',
-      'Does this page contain detailed author guidelines (yazım kuralları) covering the format of the manuscript, tables, figures, headings, abstract and references, AND does it name a citation style such as APA, MLA, AIP, NLM, AMA, ACS, Chicago or ISNAD? The page may be in Turkish or English.',
+      `Does this page contain (1) author guidelines (yazım kuralları) on the format of the manuscript, such as tables, figures, headings, abstract and references, and (2) the citation style, such as APA, MLA, AIP, NLM, AMA, ACS, Chicago or ISNAD? A link to the official guide of a style (for example apastyle.apa.org) counts as naming that style; links appear as "text (address)". A link to a downloadable template or guideline file counts as giving the guidelines.${declaredStyle ? ` The editor declared the citation style as ${declaredStyle}.` : ''} The page may be in Turkish or English.`,
       {
         tr: 'Yazım kurallarını (makale biçimi, tablo/şekil, başlıklar, özet ve kaynakça düzeni) ayrıntılı biçimde yayımlayın ve kullanılan atıf stilini (APA, MLA, AIP, NLM, AMA, ACS, Chicago, ISNAD vb.) açıkça belirtin. (K 11, GH 9)',
         en: 'Publish detailed author guidelines (manuscript format, tables/figures, headings, abstract, reference layout) and name the citation style used (APA, MLA, AIP, NLM, AMA, ACS, Chicago, ISNAD, etc.). (K 11, GH 9)',
@@ -39,17 +40,25 @@ export async function validateWebsite(
       data.publicationPolicyUrl,
       SECTION,
       'publicationPolicyUrl',
-      'Does this page describe the journal\'s publication policy, including open access information, the fee policy (article processing charges, or a statement that no fees are charged) and the review process or expected review duration? The page may be in Turkish or English.',
+      'Does this page describe the journal\'s publication policy, including (1) open access information and (2) the review process or the expected review duration? Fee information is checked separately. The page may be in Turkish or English.',
       {
-        tr: 'Yayın politikasını (açık erişim bilgisi, ücret politikası veya ücret alınmadığına dair beyan, değerlendirme süreci/süresi) içeren bir sayfa yayımlayın. (K 12)',
-        en: 'Publish a publication policy page covering open access, the fee policy (or a statement that no fees are charged) and the review process/duration. (K 12)',
+        tr: '"Yayın politikası" başlığı altında açık erişim bilgisini ve makale değerlendirme sürecini ve süresini ayrıntılı biçimde verin. (K 12)',
+        en: 'Under a "publication policy" heading, give open access information and the article review process and duration in detail. (K 12)',
       },
       language,
       { ref: 'K 12', keywords: [...KEYWORDS.publicationPolicy] }
     ),
+    feePolicyItem(data, language),
   ]);
 
-  const results: ReportItem[] = [aims, guidelines, policy];
+  // Detailed rules often live in a downloadable template the tool cannot
+  // read, so a miss here is a warning for the editor to confirm.
+  const results: ReportItem[] = [
+    aims,
+    guidelines.status === 'fail' && guidelines.confidence ? { ...guidelines, status: 'warning' } : guidelines,
+    policy,
+    fee,
+  ];
 
   results.push(
     declaration({
@@ -150,4 +159,35 @@ export async function validateWebsite(
     })
   );
   return results;
+}
+
+/**
+ * K 12 lists the fee policy under the "yayın politikası" heading. DergiPark
+ * shows it on its own "Ücret Politikası" tab, so a separate page is accepted,
+ * with a note to link it from the publication policy.
+ */
+async function feePolicyItem(data: WebsiteData, language?: string): Promise<ReportItem> {
+  const separate = Boolean(data.feePolicyUrl && data.feePolicyUrl.trim());
+  const item = await checkUrl(
+    separate ? data.feePolicyUrl : data.publicationPolicyUrl,
+    SECTION,
+    'feePolicyUrl',
+    'Does this page state the journal\'s fee policy: whether submission, processing or publication charges apply (and how much), or that no fees are charged? The page may be in Turkish or English.',
+    {
+      tr: 'Ücret politikasını (başvuru, işlem veya yayın ücreti alınıp alınmadığı, alınıyorsa tutarı) açıkça belirtin ve yayın politikası bölümünde bu bilgiye yer verin veya bağlantı verin. (K 12)',
+      en: 'State the fee policy clearly (whether submission, processing or publication charges apply, and how much) and include it in, or link it from, the publication policy section. (K 12)',
+    },
+    language,
+    { ref: 'K 12', keywords: [...KEYWORDS.feePolicy] }
+  );
+  if (separate && item.status === 'pass') {
+    return {
+      ...item,
+      message: pick(language, {
+        tr: 'Ücret politikası ayrı bir sayfada bulundu. Kriter 12 bu bilgiyi "yayın politikası" başlığı altında saydığı için yayın politikası bölümünden bu sayfaya bağlantı verilmesi önerilir. (K 12)',
+        en: 'The fee policy was found on a separate page. Criterion 12 lists it under the "publication policy" heading, so linking this page from the publication policy section is recommended. (K 12)',
+      }),
+    };
+  }
+  return item;
 }
