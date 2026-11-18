@@ -42,20 +42,73 @@ const good: ArticleFormatData = {
 };
 const run = (d: ArticleFormatData, lang?: string) => validateArticleFormat(d, lang) as Promise<Item[]>;
 
+const articlePdf = {
+  accessible: true,
+  text: 'pdf',
+  links: [],
+  statusCode: 200,
+  pdfPages: [
+    'Araştırma Makalesi\nGeliş: 01.01.2025 Kabul: 02.02.2025\nÖz: ' + 'Bu çalışma '.repeat(30) + '\nAnahtar Kelimeler: a, b\nAtıf: Dergi, 2025, 10(1), 1-20',
+    'Gövde metni '.repeat(40),
+    'Çıkar Çatışması: Yoktur. Katkı oranı: %100.\nKaynakça\nSmith, J. (2020). Başlık.',
+  ],
+};
+
 describe('validateArticleFormat', () => {
-  it('passes everything on the happy path', async () => {
+  it('passes everything on the happy path with a PDF sample article', async () => {
+    scrape.mockResolvedValue(articlePdf);
     const items = await run(good, 'tr');
-    expect(items).toHaveLength(17);
+    expect(items).toHaveLength(18);
     expect(items.every((i) => i.status === 'pass' && i.section === 'Article Format')).toBe(true);
   });
 
-  it('runs a single combined AI criterion on the sample article', async () => {
+  it('checks the PDF first page, the article end and the references with two AI criteria', async () => {
+    scrape.mockResolvedValue(articlePdf);
     await run(good);
+    expect(ai).toHaveBeenCalledTimes(2);
+    const calls = ai.mock.calls.map((c) => c[0]);
+    const main = calls.find((c) => (c.criteria as string).includes('citation line on the FIRST PAGE'));
+    expect(main).toBeDefined();
+    expect(main.pageText).toContain('İLK SAYFA');
+    expect(main.pageText).toContain('KAYNAKÇA BAŞLANGICI');
+    expect(main.pageText).toContain('Çıkar Çatışması');
+    expect(calls.some((c) => (c.criteria as string).includes('conflict of interest'))).toBe(true);
+  });
+
+  it('treats a readable PDF as evidence that its text can be copied', async () => {
+    scrape.mockResolvedValue(articlePdf);
+    const items = await run({ ...good, pdfTextCopyable: undefined as unknown as boolean });
+    expect(byField(items, 'pdfTextCopyable').status).toBe('pass');
+  });
+
+  it('fails the copyable-text rule for a scanned PDF without a text layer', async () => {
+    scrape.mockResolvedValue({ ...articlePdf, pdfPages: ['', ''] });
+    const items = await run(good);
+    expect(byField(items, 'pdfTextCopyable').status).toBe('fail');
+    expect(byField(items, 'sampleArticleUrl').status).toBe('warning');
+    expect(ai).not.toHaveBeenCalled();
+  });
+
+  it('downgrades missing end-of-article declarations to a warning', async () => {
+    scrape.mockResolvedValue(articlePdf);
+    ai.mockImplementation(async (input: { criteria: string }) =>
+      input.criteria.includes('conflict of interest')
+        ? { found: false, confidence: 'medium', evidence: '', issues: [] }
+        : { found: true, confidence: 'high', evidence: '', issues: [] }
+    );
+    expect(byField(await run(good), 'sampleArticleDeclarations').status).toBe('warning');
+  });
+
+  it('accepts an HTML article page and warns that PDF-only rules were not verified', async () => {
+    const items = await run(good);
     expect(ai).toHaveBeenCalledTimes(1);
     const criteria = ai.mock.calls[0][0].criteria as string;
-    for (const word of ['abstract', 'ORCID', 'Latin script', 'citation line']) {
+    for (const word of ['abstract', 'ORCID', 'Latin script']) {
       expect(criteria).toContain(word);
     }
+    expect(criteria).not.toContain('citation line');
+    expect(byField(items, 'sampleArticlePdf').status).toBe('warning');
+    expect(byField(items, 'pdfTextCopyable').status).toBe('pass');
   });
 
   it.each([

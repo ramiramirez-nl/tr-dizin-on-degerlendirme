@@ -125,6 +125,8 @@ export interface CheckUrlOptions {
   ref?: string;
   /** Words that locate the relevant passages on a long page (see `selectPassages`). */
   keywords?: string[];
+  /** Build the text sent to the AI from the scrape (for example selected PDF pages). */
+  textFrom?: (scraped: ScrapeResult) => string;
 }
 
 /** " Eksik görünenler: a; b." built from the AI's list of missing elements. */
@@ -187,7 +189,7 @@ export async function checkUrl(
     };
   }
   const analysis = await analyzePageContent({
-    pageText: scraped.text,
+    pageText: options.textFrom ? options.textFrom(scraped) : scraped.text,
     pageMeta: scraped.meta,
     criteria: aiCriteria,
     keywords: options.keywords,

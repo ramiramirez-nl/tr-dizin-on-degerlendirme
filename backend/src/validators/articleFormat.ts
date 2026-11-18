@@ -1,7 +1,7 @@
 import type { ArticleFormatData, ValidationContext } from '../types/formData';
 import type { ReportItem } from '../types/report';
-import { checkUrl, declaration, pick } from './shared';
-import { KEYWORDS } from './keywords';
+import { declaration, pick } from './shared';
+import { sampleArticleItems } from './sampleArticle';
 
 const SECTION = 'Article Format';
 
@@ -236,20 +236,9 @@ export async function validateArticleFormat(
   language?: string,
   _context?: ValidationContext
 ): Promise<ReportItem[]> {
-  const sample = await checkUrl(
-    data.sampleArticleUrl,
-    SECTION,
-    'sampleArticleUrl',
-    'Examine this sample article (HTML page or PDF text). Does it show ALL of the following: an abstract and keywords in the language of the article; an article type label (e.g. research article, review); submission and acceptance dates; author affiliations; ORCID iDs; a reference list in Latin script; and a bibliographic citation line (journal name, year, volume, issue, pages)? The page may be in Turkish or English.',
-    {
-      tr: 'Örnek makalenin özet ve anahtar sözcükleri, makale türünü, geliş/kabul tarihlerini, yazar kurumlarını, ORCID numaralarını, Latin alfabeli kaynakçayı ve künye satırını içerdiğinden emin olun. (ÖK 10–13, GH 8, GH 11)',
-      en: 'Make sure the sample article shows the abstract and keywords, article type, submission/acceptance dates, author affiliations, ORCID iDs, a Latin-script reference list and a citation line. (ÖK 10–13, GH 8, GH 11)',
-    },
-    language,
-    { ref: 'ÖK 10–13, GH 8, GH 11', keywords: [...KEYWORDS.sampleArticle] }
-  );
+  const sample = await sampleArticleItems(data.sampleArticleUrl, language);
 
-  const results: ReportItem[] = [sample];
+  const results: ReportItem[] = [...sample.items];
   const toItem = (row: Row) =>
     declaration({
       section: SECTION,
@@ -342,7 +331,36 @@ export async function validateArticleFormat(
     'bilingualTitleAbstractKeywords',
     'bilingualTocTitles',
   ] as const) {
-    results.push(toItem(rowFor(field)));
+    results.push(
+      field === 'pdfTextCopyable' && sample.pdfTextCopyable !== undefined
+        ? copyableFromPdf(sample.pdfTextCopyable, data.sampleArticleUrl, language)
+        : toItem(rowFor(field))
+    );
   }
   return results;
+}
+
+/** The sample PDF was read: whether its text came out is evidence, not a declaration. */
+function copyableFromPdf(copyable: boolean, url: string, language?: string): ReportItem {
+  return {
+    section: SECTION,
+    field: 'pdfTextCopyable',
+    status: copyable ? 'pass' : 'fail',
+    message: copyable
+      ? pick(language, {
+          tr: 'Örnek makale PDF\'inin metni okunabiliyor, yani kopyalanabilir. (Başvuru Süreci 1.3)',
+          en: 'The text of the sample article PDF can be read, so it can be copied. (Başvuru Süreci 1.3)',
+        })
+      : pick(language, {
+          tr: 'Örnek makale PDF\'inden metin çıkarılamadı. PDF taranmış görüntülerden oluşuyor olabilir. (Başvuru Süreci 1.3)',
+          en: 'No text could be extracted from the sample article PDF. It may consist of scanned images. (Başvuru Süreci 1.3)',
+        }),
+    suggestion: copyable
+      ? ''
+      : pick(language, {
+          tr: 'PDF dosyalarını taranmış görüntü olarak değil, metni seçilip kopyalanabilir biçimde hazırlayın.',
+          en: 'Produce PDFs with selectable, copyable text rather than scanned images.',
+        }),
+    url,
+  };
 }

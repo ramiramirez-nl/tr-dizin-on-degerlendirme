@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio';
 import { URL } from 'url';
 import { withRetry } from '../utils/retry';
 import { TtlCache } from '../utils/ttlCache';
+import { extractPdfPages, isPdf } from './pdfText';
 
 export type ScrapeErrorType = 'timeout' | 'network' | 'http';
 
@@ -14,6 +15,8 @@ export interface ScrapeResult {
   errorType?: ScrapeErrorType;
   /** Declared language metadata (html lang, hreflang, citation_language, ...), when present. */
   meta?: string;
+  /** Set when the URL served a PDF: the text of each page (empty strings for a scanned PDF). */
+  pdfPages?: string[];
 }
 
 const BLOCK_ELEMENTS =
@@ -132,7 +135,8 @@ const REAL_BROWSER_HEADERS = {
   'Upgrade-Insecure-Requests': '1',
 };
 
-const MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
+// Article PDFs with figures can reach several megabytes.
+const MAX_RESPONSE_BYTES = 15 * 1024 * 1024;
 
 // Successful scrape results only — repeat submissions for the same journal
 // skip the network round-trip. 24h TTL, capped to bound memory.
@@ -168,7 +172,7 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
         validatePublicUrl(target);
       },
       validateStatus: (status) => status < 500,
-      responseType: 'text',
+      responseType: 'arraybuffer',
       maxContentLength: MAX_RESPONSE_BYTES,
       maxBodyLength: MAX_RESPONSE_BYTES,
     });
@@ -183,11 +187,22 @@ export async function scrapeUrl(url: string): Promise<ScrapeResult> {
     });
 
     const statusCode = response.status;
-    const html = String(response.data ?? '');
+    const raw: unknown = response.data ?? '';
+    const bytes = typeof raw === 'string' ? Buffer.from(raw, 'utf8') : Buffer.from(raw as ArrayBuffer);
 
     if (statusCode >= 400) {
       return { accessible: false, text: '', links: [], statusCode, errorType: 'http' };
     }
+
+    const contentType = String(response.headers?.['content-type'] ?? '');
+    if (isPdf(contentType, bytes)) {
+      const pdfPages = await extractPdfPages(bytes);
+      const result: ScrapeResult = { accessible: true, text: pdfPages.join('\n'), links: [], statusCode, pdfPages };
+      scrapeCache.set(safeUrl, result);
+      return result;
+    }
+
+    const html = bytes.toString('utf8');
 
     const $ = cheerio.load(html);
     const meta = extractLanguageMeta($);

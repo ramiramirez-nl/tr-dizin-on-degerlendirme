@@ -54,10 +54,10 @@ Validators and backend tests use these short codes. At runtime `expandRefs()` in
 
 ### Form Structure (8 Steps)
 1. **Identity** (`identity`): journal title, homepage, ISSN, subject area, issues per year, published issue count, publication languages
-2. **Website & Policies** (`website`): aims and scope, author guidelines, publication policy, journal information, journal history, indexing claims
+2. **Website & Policies** (`website`): aims and scope, author guidelines, publication policy, optional fee policy page, journal information, journal history, indexing claims
 3. **Editorial Boards** (`editorialBoards`): board URL, external board share, field and language editors
 4. **Peer Review** (`peerReview`): review policy URL, reviewer count and institutions, report retention, report content, plagiarism screening
-5. **Article Format** (`articleFormat`): sample article URL, abstract and keywords, article type, dates, affiliations and ORCID, references, page numbering, advertising
+5. **Article Format** (`articleFormat`): sample article PDF link (an article page is accepted as a fallback), abstract and keywords, article type, dates, affiliations and ORCID, references, page numbering, advertising
 6. **Ethics** (`ethics`): ethics policy URL, role-specific sections, COPE/ICMJE references, ethics committee approval, declarations, copyright
 7. **Content & Regularity** (`content`): on-time publication, article counts and ratios, combined and special issues, review and case report rules
 8. **Review**: summary, the "Dergi Başvuru Sözleşmesi" checklist, and a required acceptance checkbox (`agreement.acceptedCriteria`). This value is frontend only and is not sent to the backend.
@@ -162,7 +162,9 @@ The frontend has no secrets. All API calls go through the backend.
 - Server-side budget: `ASSESSMENT_TIMEOUT_MS` (150 seconds) in `backend/src/index.ts`
 
 ### 3. URL Validation & Scraping
-- **pageScraper.ts** fetches a URL and returns `{ accessible, text, links, statusCode, errorType }`
+- **pageScraper.ts** fetches a URL and returns `{ accessible, text, links, statusCode, errorType, meta, pdfPages }`
+- HTML text has one line per block element, and links that leave the site carry their address ("buradan (https://apastyle.apa.org/)")
+- A PDF response is read page by page with pdf.js (`pdfText.ts`, `pdfjs-dist` pinned). A PDF without a text layer yields empty pages, which the article format check reports as non-copyable text
 - Uses a real Chrome User-Agent (journal sites often geo-block or reject bots)
 - Axios, not Puppeteer, because the Render free tier cannot run headless browsers
 - SSRF protection: `validatePublicUrl()` blocks private and internal targets on the initial request and on every redirect hop (`beforeRedirect`)
@@ -170,6 +172,8 @@ The frontend has no secrets. All API calls go through the backend.
 
 ### 4. AI Content Analysis
 - **aiClient.ts** (`backend/src/ai/aiClient.ts`) sends an OpenAI-compatible chat completion request with the page text and the validation criterion
+- Long pages: each page check passes `keywords` (`validators/keywords.ts`). `selectPassages()` in `scraper/passages.ts` sends the best-matching blocks in page order within a 4000-character budget. When matching blocks did not fit (`partial`), a "not found" verdict becomes a low-confidence `warning`, never a `fail`
+- The model lists each missing element of a multi-part criterion in `issues`. `checkUrl()` shows them as "Eksik görünenler: ..." in the fail message
 - The AI prompt identifies the reviewer as a TR Dizin compliance checker. Pages are usually Turkish, and the model evaluates content in any language.
 - The response is parsed as JSON and checked against the expected shape (`found`, `confidence`, `evidence`, `issues`). A malformed response degrades to a skipped result, which is reported as a warning.
 - The `language` parameter (`tr` or `en`) makes the `issues` list come back in the UI language. JSON keys are never translated.
@@ -252,7 +256,7 @@ Keep files under 400 lines. Current structure:
 - Build command: `npm run build` (root)
 - Start command: `node backend/dist/index.js` (serves the frontend static files and the API)
 - Health check: `GET /health` returns `{ status: 'ok' }`
-- Environment: `OPENAI_API_KEY` is set in the Render dashboard (marked `sync: false`, not in `render.yaml`). `OPENAI_BASE_URL` and `AI_MODEL` are set in `render.yaml`. `NODE_VERSION` is 20.11.1.
+- Environment: `OPENAI_API_KEY` is set in the Render dashboard (marked `sync: false`, not in `render.yaml`). `OPENAI_BASE_URL` and `AI_MODEL` are set in `render.yaml`. `NODE_VERSION` is 22.22.0 (pdf.js needs Node 22.13 or later).
 
 ## Testing Strategy
 
