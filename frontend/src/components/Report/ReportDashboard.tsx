@@ -5,6 +5,7 @@ import { SummaryBanner } from './SummaryBanner';
 import { IssueCard } from './IssueCard';
 import { CriteriaLegend } from '../CriteriaLegend';
 import { downloadReportHtml } from '../../utils/exportReport';
+import { sectionLabel } from '../../utils/sectionLabel';
 
 interface Props {
   report: ReportResponse;
@@ -36,13 +37,17 @@ function buildPlainText(report: ReportResponse, lang: string, t: (key: string) =
 }
 
 function PassCard({ item }: { item: ReportItem }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-md bg-green-50 p-3 ring-1 ring-green-200">
       <div className="flex items-start gap-2">
         <span className="mt-0.5 text-green-600">✓</span>
         <div className="flex-1 text-sm">
           <div className="font-medium text-green-900">
-            {item.section} / {item.field}
+            {sectionLabel(item.section, t)}{' '}
+            <span lang="en" className="font-mono text-xs font-normal text-green-700">
+              {item.field}
+            </span>
           </div>
           <div className="text-green-800">{item.message}</div>
         </div>
@@ -55,6 +60,8 @@ export function ReportDashboard({ report, onReset, onBack }: Props) {
   const { t, i18n } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [showPasses, setShowPasses] = useState(false);
+  // Report text is produced on the server in the language active at submission.
+  const [reportLanguage] = useState(i18n.language);
 
   const all = report.items ?? report.issues;
   const issues = all.filter((i) => i.status !== 'pass');
@@ -74,6 +81,12 @@ export function ReportDashboard({ report, onReset, onBack }: Props) {
         failCount={report.failCount}
         warningCount={report.warningCount}
       />
+
+      {i18n.language !== reportLanguage && (
+        <p role="status" className="rounded-md bg-blue-50 p-3 text-sm text-blue-900 ring-1 ring-blue-200">
+          {t('report.languageChangedNotice')}
+        </p>
+      )}
 
       {issues.length === 0 ? (
         <div className="rounded-md bg-white p-6 text-center text-gray-700 shadow-sm ring-1 ring-gray-200">

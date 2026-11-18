@@ -190,7 +190,7 @@ The frontend has no secrets. All API calls go through the backend.
 - Two locales: `frontend/src/i18n/tr.json` (reference and default) and `en.json`
 - Keys follow a path-based naming scheme: `app.title`, `steps.identity`, `nav.next`
 - `frontend/src/i18n/keys.test.ts` asserts that `en` has exactly the same key set as `tr`
-- Language is stored under `trdizin-lang`. There is no right-to-left branch.
+- The UI, and with it the report, opens in Turkish unless the user picked English with the language selector (`initialLanguage()` in `frontend/src/i18n/language.ts`). The browser language is ignored. The choice is stored under `trdizin-lang`. Report text is produced at submission, so the dashboard shows a notice when the language changes afterwards. There is no right-to-left branch.
 - Backend report text is not in the locale files. It is bilingual through `pick()` in the validators.
 
 ### 7. Report Dashboard

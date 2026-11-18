@@ -118,7 +118,7 @@ describe('validateIdentity', () => {
     ai.mockResolvedValue({ found: false, confidence: 'high', evidence: '', issues: [], partial: true });
     const item = byField(await run(base), 'publicationLanguageStated');
     expect(item.status).toBe('warning');
-    expect(item.message).toContain('okunan bölümlerinde');
+    expect(item.message).toContain('incelenen bölümlerinde');
   });
 
   it('warns on all AI checks when AI is skipped', async () => {

@@ -224,8 +224,8 @@ export async function checkUrl(
         })
       : partial
         ? pick(language, {
-            tr: 'Gerekli içerik sayfanın okunan bölümlerinde bulunamadı. Sayfa uzun olduğu için tamamı incelenemedi.',
-            en: 'Required content was not found in the parts of the page that were read. The page is long and could not be read in full.',
+            tr: 'Gerekli içerik sayfanın incelenen bölümlerinde bulunamadı. Sayfa uzun olduğundan bazı bölümler incelenmemiş olabilir, elle doğrulayın.',
+            en: 'Required content was not found in the parts of the page that were examined. The page is long, so some parts may not have been examined; please check manually.',
           }) + missingList(analysis.issues, language)
         : pick(language, {
             tr: 'Gerekli içerik bulunamadı.',

@@ -113,8 +113,8 @@ async function homepageItems(url: string, language?: string): Promise<ReportItem
           status: 'warning',
           message: withRef(
             pick(language, {
-              tr: 'Ana sayfanın okunan bölümlerinde bu bilgi bulunamadı. Sayfa uzun olduğu için tamamı incelenemedi.',
-              en: 'This information was not found in the parts of the homepage that were read. The page is long and could not be read in full.',
+              tr: 'Bu bilgi ana sayfanın incelenen bölümlerinde bulunamadı. Sayfa uzun olduğundan bazı bölümler incelenmemiş olabilir, elle doğrulayın.',
+              en: 'This information was not found in the parts of the homepage that were examined. The page is long, so some parts may not have been examined; please check manually.',
             }),
             check.ref,
             language

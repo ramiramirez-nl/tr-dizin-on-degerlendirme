@@ -17,7 +17,15 @@ sentences that prove each requirement. No AI call is made.
 A case whose file is missing is skipped, so cases can be written before the
 pages are collected.
 
-## Pages expected for the AKÜ İİBF Dergisi case (November 2026)
+## Source and licence
+
+The AKÜ files were taken on 18 November 2026 during a manual Chrome test. Each
+page was requested with `fetch` from a tab on the journal site and the raw
+response was saved unchanged, which keeps the collapsed policy sections. The
+journal publishes all content under CC BY-NC 4.0; the files are kept here only
+for non-commercial regression testing of this tool.
+
+## AKÜ İİBF Dergisi case (November 2026)
 
 | File | URL |
 |---|---|
@@ -26,4 +34,4 @@ pages are collected.
 | `akuiibfd-policy.html` | https://dergipark.org.tr/tr/pub/akuiibfd/policy |
 | `akuiibfd-aim-and-scope.html` | https://dergipark.org.tr/tr/pub/akuiibfd/aim-and-scope |
 | `akuiibfd-article.html` | https://dergipark.org.tr/tr/pub/akuiibfd/article/1921151 |
-| `akuiibfd-article.pdf` | PDF of the same article |
+| `akuiibfd-article.pdf` | https://dergipark.org.tr/tr/download/article-file/5869418 |

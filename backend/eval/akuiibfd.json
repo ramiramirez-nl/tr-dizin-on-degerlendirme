@@ -1,6 +1,6 @@
 {
   "name": "AKÜ İİBF Dergisi, editor feedback of November 2026",
-  "note": "The editor disputed five FAILs. Expected verdicts follow the reviewed evidence: the content is on the pages. A list allows several statuses. Fields not listed are not compared. Replace sampleArticleUrl with the article PDF link once known.",
+  "note": "Verdicts agreed after the second Chrome test (18 November 2026). A list allows several statuses. Fields not listed are not compared.",
   "request": {
     "language": "tr",
     "identity": {
@@ -10,37 +10,64 @@
       "subjectArea": "social_humanities",
       "issuesPerYear": 3,
       "publishedIssueCount": 59,
-      "publicationLanguages": ["Turkish", "English"]
+      "publicationLanguages": [
+        "Turkish",
+        "English"
+      ]
     },
     "website": {
       "aimsAndScopeUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/aim-and-scope",
       "authorGuidelinesUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
-      "publicationPolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/policy"
+      "publicationPolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/policy",
+      "feePolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/price-policy"
     },
-    "editorialBoards": { "editorialBoardUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/board" },
+    "editorialBoards": {
+      "editorialBoardUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/board"
+    },
     "peerReview": {
       "peerReviewPolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
       "screensPlagiarism": true,
       "plagiarismPolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292"
     },
     "articleFormat": {
-      "sampleArticleUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/article/1921151",
+      "sampleArticleUrl": "https://dergipark.org.tr/tr/download/article-file/5869418",
       "referenceStyle": "APA"
     },
-    "ethics": { "ethicsPolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/policy" }
+    "ethics": {
+      "ethicsPolicyUrl": "https://dergipark.org.tr/tr/pub/akuiibfd/policy"
+    }
   },
   "expect": {
     "homepageUrl": "pass",
     "issnOnHomepage": "pass",
-    "issnOnline": ["pass", "warning"],
-    "publicationLanguageStated": ["fail", "warning"],
+    "issnOnline": [
+      "pass",
+      "warning"
+    ],
+    "publicationLanguageStated": [
+      "fail",
+      "warning"
+    ],
     "aimsAndScopeUrl": "pass",
-    "authorGuidelinesUrl": ["pass", "warning"],
+    "authorGuidelinesUrl": [
+      "pass",
+      "warning"
+    ],
     "publicationPolicyUrl": "pass",
     "editorialBoardUrl": "pass",
     "peerReviewPolicyUrl": "pass",
     "plagiarismPolicyUrl": "pass",
     "sampleArticleUrl": "pass",
-    "ethicsPolicyUrl": "pass"
+    "ethicsPolicyUrl": [
+      "pass",
+      "warning"
+    ],
+    "feePolicyUrl": "pass",
+    "peerReviewProcessDetailed": [
+      "pass",
+      "warning"
+    ],
+    "sampleArticleDeclarations": "pass",
+    "pdfTextCopyable": "pass"
   }
 }

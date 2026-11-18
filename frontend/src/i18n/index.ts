@@ -2,21 +2,20 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from './en.json';
 import tr from './tr.json';
+import { SUPPORTED_LANGUAGES, initialLanguage } from './language';
 
 const STORAGE_KEY = 'trdizin-lang';
-const supported = ['tr', 'en'];
 
 function readSaved(): string | null {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved && supported.includes(saved) ? saved : null;
+    return saved && SUPPORTED_LANGUAGES.includes(saved) ? saved : null;
   } catch {
     return null;
   }
 }
 
-const browser = navigator.language.split('-')[0];
-const lng = readSaved() ?? (supported.includes(browser) ? browser : 'tr');
+const lng = initialLanguage(readSaved());
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -24,7 +23,7 @@ i18n.use(initReactI18next).init({
     en: { t: en },
   },
   lng,
-  fallbackLng: 'en',
+  fallbackLng: 'tr',
   defaultNS: 't',
   interpolation: { escapeValue: false },
 });

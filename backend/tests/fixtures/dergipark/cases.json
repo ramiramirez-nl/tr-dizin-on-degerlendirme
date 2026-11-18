@@ -4,41 +4,83 @@
     "file": "akuiibfd-author-guide.html",
     "url": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
     "keywords": "peerReview",
-    "mustContain": ["Çalışmanın Değerlendirilmesi", "hakem"]
+    "mustContain": [
+      "Çalışmanın Değerlendirilmesi",
+      "en az iki hakem"
+    ]
   },
   {
     "name": "AKÜ author guide: citation style link reaches the guidelines check",
     "file": "akuiibfd-author-guide.html",
     "url": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
     "keywords": "authorGuidelines",
-    "mustContain": ["Atıf Sistemi", "atıf gösterme biçimine"]
+    "mustContain": [
+      "Atıf Sistemi",
+      "atıf gösterme biçimine"
+    ]
   },
   {
     "name": "AKÜ policy page: COPE and every role section reach the ethics check",
     "file": "akuiibfd-policy.html",
     "url": "https://dergipark.org.tr/tr/pub/akuiibfd/policy",
     "keywords": "ethics",
-    "mustContain": ["COPE", "Editör ve Editör Kurulunun Sorumlulukları", "Hakemlerin Sorumlulukları", "Yazarların Sorumlulukları"]
+    "mustContain": [
+      "COPE",
+      "Editör ve Editör Kurulunun Sorumlulukları",
+      "Hakemlerin Sorumlulukları",
+      "Yazarların Sorumlulukları"
+    ]
   },
   {
     "name": "AKÜ policy page: the publication policy section reaches the policy check",
     "file": "akuiibfd-policy.html",
     "url": "https://dergipark.org.tr/tr/pub/akuiibfd/policy",
     "keywords": "publicationPolicy",
-    "mustContain": ["Yayın Politikası"]
+    "mustContain": [
+      "Yayın Politikası",
+      "çift-körleme",
+      "açık erişim"
+    ]
   },
   {
     "name": "AKÜ homepage: ISSN reaches the ISSN check",
     "file": "akuiibfd-home.html",
     "url": "https://dergipark.org.tr/tr/pub/akuiibfd",
     "keywords": "homepageIssn",
-    "mustContain": ["2651-4117"]
+    "mustContain": [
+      "2651-4117"
+    ]
   },
   {
-    "name": "AKÜ article PDF: first page and references reach the sample article check",
+    "name": "AKÜ article PDF: keywords in both languages, dates and references reach the sample article check (round 1 false FAIL)",
     "file": "akuiibfd-article.pdf",
-    "url": "https://dergipark.org.tr/tr/download/article-file/1921151",
+    "url": "https://dergipark.org.tr/tr/download/article-file/5869418",
     "keywords": "sampleArticle",
-    "mustContain": ["İLK SAYFA", "KAYNAKÇA BAŞLANGICI"]
+    "mustContain": [
+      "İLK SAYFALAR",
+      "Keywords",
+      "Anahtar Kelimeler",
+      "Received",
+      "KAYNAKÇA BAŞLANGICI"
+    ]
+  },
+  {
+    "name": "AKÜ author guide: how decisions reach authors reaches the review detail check",
+    "file": "akuiibfd-author-guide.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd/page/5292",
+    "keywords": "peerReviewDetail",
+    "mustContain": [
+      "Gerekçeli kararlar",
+      "en az iki hakem"
+    ]
+  },
+  {
+    "name": "AKÜ policy page: fee wording reaches the fee check when no separate fee page is given",
+    "file": "akuiibfd-policy.html",
+    "url": "https://dergipark.org.tr/tr/pub/akuiibfd/policy",
+    "keywords": "feePolicy",
+    "mustContain": [
+      "ücretsiz"
+    ]
   }
 ]

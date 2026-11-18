@@ -75,7 +75,8 @@ describe('validateWebsite', () => {
     const item = byField(await run(good), 'publicationPolicyUrl') as Item & { confidence?: string };
     expect(item.status).toBe('warning');
     expect(item.confidence).toBe('low');
-    expect(item.message).toContain('okunan bölümlerinde bulunamadı');
+    expect(item.message).toContain('incelenen bölümlerinde bulunamadı');
+    expect(item.message).not.toContain('tamamı incelenemedi');
   });
 
   it('passes the check keywords to the AI client', async () => {
