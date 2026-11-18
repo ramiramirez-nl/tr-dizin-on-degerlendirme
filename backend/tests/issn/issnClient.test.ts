@@ -30,6 +30,36 @@ describe('lookupIssn', () => {
     expect(result.lookupFailed).toBeUndefined();
   });
 
+  it('reports a bot challenge page as a failed lookup, not a registered title', async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      status: 200,
+      data: '<html><head><title>Making sure you&#39;re not a bot!</title></head><body></body></html>',
+    });
+    const result = await lookupIssn('2651-4117');
+    expect(result.valid).toBe(false);
+    expect(result.lookupFailed).toBe(true);
+    expect(result.registeredTitle).toBe('');
+  });
+
+  it('does not cache a failed lookup', async () => {
+    vi.mocked(axios.get)
+      .mockResolvedValueOnce({ status: 200, data: '<title>Making sure you&#39;re not a bot!</title>' })
+      .mockResolvedValueOnce({ status: 200, data: '<title>ISSN 2651-4118 - Real Journal (Online)</title>' });
+    expect((await lookupIssn('2651-4118')).lookupFailed).toBe(true);
+    const second = await lookupIssn('2651-4118');
+    expect(second.valid).toBe(true);
+    expect(second.registeredTitle).toBe('Real Journal');
+  });
+
+  it('decodes HTML entities in the registered title', async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      status: 200,
+      data: '<title>ISSN 1111-2222 - Journal of Law &amp; Society&#39;s Review (Print)</title>',
+    });
+    const result = await lookupIssn('1111-2222');
+    expect(result.registeredTitle).toBe("Journal of Law & Society's Review");
+  });
+
   it('returns valid false with lookupFailed on network error', async () => {
     vi.mocked(axios.get).mockRejectedValueOnce(new Error('Network error'));
     const result = await lookupIssn('9999-9999');

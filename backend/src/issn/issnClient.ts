@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as cheerio from 'cheerio';
 import { withRetry } from '../utils/retry';
 import { TtlCache } from '../utils/ttlCache';
 
@@ -74,13 +75,19 @@ export async function lookupIssn(issn: string): Promise<IssnLookupResult> {
       return remember({ valid: false, registeredTitle: '', issn: formatted });
     }
 
-    // Parse <title>ISSN 2636-8536 - Eskiyeni (Online)</title>
-    const titleMatch = html.match(/<title>\s*([^<]+?)\s*<\/title>/i);
-    if (!titleMatch) {
-      return remember({ valid: false, registeredTitle: '', issn: formatted });
+    // Parse <title>ISSN 2636-8536 - Eskiyeni (Online)</title>. Cheerio decodes
+    // HTML entities such as &#39;.
+    const title = cheerio.load(html)('title').first().text().replace(/\s+/g, ' ').trim();
+
+    // A record page title always starts with "ISSN xxxx-xxxx - ". Anything else
+    // (a bot challenge such as "Making sure you're not a bot!", a maintenance
+    // page) proves nothing about the ISSN: report the lookup as failed and do
+    // not cache it.
+    if (!/^ISSN\s+[0-9]{4}-[0-9]{3}[0-9X]\s*-\s*\S/i.test(title)) {
+      console.warn(`ISSN lookup for ${formatted} returned an unexpected page: ${title.slice(0, 80)}`);
+      return { valid: false, registeredTitle: '', issn: formatted, lookupFailed: true };
     }
 
-    const title = titleMatch[1].trim();
     // Strip leading "ISSN xxxx-xxxx - " and trailing "(Online|Print)"
     const cleaned = title
       .replace(/^ISSN\s+[0-9]{4}-[0-9]{3}[0-9X]\s*-\s*/i, '')
